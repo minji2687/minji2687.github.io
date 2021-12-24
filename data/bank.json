@@ -8,12 +8,12 @@
       "saveList": [
         {
           "savingName": "여행가자!",
-          "totalSavedMoney": 84200,
+          "savedMoney": 84200,
           "targetAmount": 100000
         },
         {
           "savingName": "냉장고 사기",
-          "totalSavedMoney": 142200,
+          "savedMoney": 142200,
           "targetAmount": 5000000
         }
       ],
@@ -56,12 +56,12 @@
       "saveList": [
         {
           "savingName": "개임기^^",
-          "totalSavedMoney": 142200,
+          "savedMoney": 142200,
           "targetAmount": 82200
         },
         {
           "savingName": "기부실천",
-          "totalSavedMoney": 432000,
+          "savedMoney": 432000,
           "targetAmount": 5000000
         }
       ],
@@ -132,12 +132,12 @@
       "saveList": [
         {
           "savingName": "딸 냉장고",
-          "totalSavedMoney": 545200,
+          "savedMoney": 545200,
           "targetAmount": 100000
         },
         {
           "savingName": "아들 컴퓨터",
-          "totalSavedMoney": 432000,
+          "savedMoney": 432000,
           "targetAmount": 5000000
         }
       ],

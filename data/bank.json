@@ -55,6 +55,18 @@
       "avatarUrl": null,
       "saveList": [
         {
+          "savingName": "개임기^^",
+          "totalSavedMoney": 142200,
+          "targetAmount": 82200
+        },
+        {
+          "savingName": "기부실천",
+          "totalSavedMoney": 432000,
+          "targetAmount": 5000000
+        }
+      ],
+      "transactionList": [
+        {
           "date": "2021-09-01",
           "income": "out",
           "classify": "eatout",

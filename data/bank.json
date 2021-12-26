@@ -4,6 +4,8 @@
       "accountName": "생활비",
       "accountNumber": "355-583725-248388",
       "accountMoney": 1240000,
+      "spentMoneyForMonth": 300000,
+      "baseAmount": 500000,
       "avatarUrl": "https://minji2687.github.io/data/avatar2.png",
       "saveList": [
         {
@@ -52,6 +54,8 @@
       "accountName": "의민이 용돈",
       "accountNumber": "23-232117-34773",
       "accountMoney": 440000,
+      "spentMoneyForMonth": 100000,
+      "baseAmount": 200000,
       "avatarUrl": "https://minji2687.github.io/data/avatar1.png",
       "saveList": [
         {
@@ -128,6 +132,8 @@
       "accountName": "할머니계좌",
       "accountNumber": "155-23422-78773",
       "accountMoney": 3140000,
+      "spentMoneyForMonth": 400000,
+      "baseAmount": 700000,
       "avatarUrl": "https://minji2687.github.io/data/avatar3.png",
       "saveList": [
         {

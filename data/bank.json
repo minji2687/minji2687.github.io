@@ -83,7 +83,7 @@
       "accountNumber": "23-232117-34773",
       "accountMoney": 440000,
       "spentMoneyForMonth": 100000,
-      "baseAmount": 200000,
+      "baseAmount": 20000000,
       "avatarUrl": "https://minji2687.github.io/data/avatar1.png",
       "saveList": [
         {
@@ -99,10 +99,24 @@
       ],
       "transactionList": [
         {
-          "date": "2021-09-01",
+          "date": "2021-12-26",
           "income": "out",
           "classify": "eatout",
           "history": "냉면",
+          "price": 5000
+        },
+        {
+          "date": "2021-12-26",
+          "income": "out",
+          "classify": "eatout",
+          "history": "돈까쓰",
+          "price": 3000
+        },
+        {
+          "date": "2021-12-26",
+          "income": "out",
+          "classify": "eatout",
+          "history": "우리할매떡볶이",
           "price": 8000
         },
         {

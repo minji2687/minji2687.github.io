@@ -21,28 +21,56 @@
       ],
       "transactionList": [
         {
-          "date": "2021-09-01",
-          "income": "in",
-          "classify": "",
-          "history": "용돈",
-          "price": 20000
+          "date": "2021-12-27",
+          "income": "out",
+          "classify": "eatout",
+          "history": "식빵",
+          "price": 8500
         },
         {
-          "date": "2021-09-01",
+          "date": "2021-12-27",
+          "income": "out",
+          "classify": "eatout",
+          "history": "그릭요거트",
+          "price": 12000
+        },
+        {
+          "date": "2021-12-27",
           "income": "out",
           "classify": "health",
           "history": "샐러드",
           "price": 10000
         },
         {
-          "date": "2021-09-01",
+          "date": "2021-12-26",
+          "income": "out",
+          "classify": "mart",
+          "history": "롯데마트",
+          "price": 20000
+        },
+        {
+          "date": "2021-12-26",
+          "income": "in",
+          "classify": "",
+          "history": "용돈",
+          "price": 20000
+        },
+        {
+          "date": "2021-12-26",
+          "income": "out",
+          "classify": "health",
+          "history": "샐러드",
+          "price": 10000
+        },
+        {
+          "date": "2021-12-26",
           "income": "out",
           "classify": "eatout",
           "history": "맛있어돈까스",
           "price": 8000
         },
         {
-          "date": "2021-09-01",
+          "date": "2021-12-26",
           "income": "out",
           "classify": "mart",
           "history": "이마트",

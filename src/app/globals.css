@@ -1,0 +1,96 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-sky: #0284c7;          /* sky-600 — 하늘색 포인트 */
+  --color-sky-light: #38bdf8;    /* sky-400 — 다크모드용 */
+  --color-blue: #3b7dd8;
+  --color-blue-muted: #4a7fa5;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Lora", ui-serif, Georgia, serif;
+  --font-mono: "Fira Code", ui-monospace, monospace;
+}
+
+:root {
+  /* 라이트 모드 — 쿨톤 슬레이트 베이스 */
+  --background: #f8fafc;         /* slate-50 */
+  --foreground: #0f172a;         /* slate-900 */
+  --accent: #0284c7;             /* sky-600 하늘색 */
+  --accent-sub: #3b7dd8;
+  --border-color: #e2e8f0;       /* slate-200 */
+  --card-bg: #ffffff;
+  --muted: #475569;              /* slate-600 */
+  --muted-light: #94a3b8;        /* slate-400 */
+}
+
+.dark {
+  --background: #0f172a;         /* slate-900 */
+  --foreground: #f1f5f9;         /* slate-100 */
+  --accent: #38bdf8;             /* sky-400 */
+  --accent-sub: #93b4d4;
+  --border-color: #1e293b;       /* slate-800 */
+  --card-bg: #1e293b;
+  --muted: #94a3b8;              /* slate-400 */
+  --muted-light: #64748b;        /* slate-500 */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 헤딩은 항상 진하게 */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--foreground);
+}
+
+/* Prose 커스터마이징 */
+.prose {
+  --tw-prose-body: var(--foreground);
+  --tw-prose-headings: #0f172a;
+  --tw-prose-links: var(--accent);
+  --tw-prose-code: var(--accent);
+  --tw-prose-bold: #0f172a;
+  --tw-prose-pre-bg: #0f172a;
+  max-width: none;
+}
+
+.dark .prose {
+  --tw-prose-body: var(--foreground);
+  --tw-prose-headings: var(--foreground);
+  --tw-prose-bold: var(--foreground);
+  --tw-prose-invert-body: var(--foreground);
+  --tw-prose-invert-headings: var(--foreground);
+}
+
+/* 스크롤바 커스터마이징 */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}

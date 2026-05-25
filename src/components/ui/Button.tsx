@@ -17,7 +17,7 @@ const variantClasses = {
   secondary:
     'border border-[var(--border-color)] bg-[var(--card-bg)] text-[var(--foreground)] hover:border-[var(--accent)] hover:text-[var(--accent)]',
   ghost:
-    'text-[var(--muted)] hover:bg-slate-100 hover:text-[var(--foreground)] dark:hover:bg-slate-800',
+    'text-[var(--muted)] hover:bg-[var(--hover-bg)] hover:text-[var(--foreground)]',
 }
 
 const sizeClasses = {

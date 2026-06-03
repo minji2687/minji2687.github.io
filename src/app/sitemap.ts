@@ -1,11 +1,15 @@
 import type { MetadataRoute } from 'next'
 import { getAllArticleMeta } from '@/lib/articles'
+import { getAllNoteMeta } from '@/lib/notes'
 import { siteConfig } from '@/lib/site'
 
 export const dynamic = 'force-static'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const articles = await getAllArticleMeta()
+  const [articles, notes] = await Promise.all([
+    getAllArticleMeta(),
+    getAllNoteMeta(),
+  ])
 
   const staticRoutes: MetadataRoute.Sitemap = [
     {
@@ -59,5 +63,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: article.featured ? 0.9 : 0.7,
   }))
 
-  return [...staticRoutes, ...articleRoutes]
+  const noteRoutes: MetadataRoute.Sitemap = notes.map((note) => ({
+    url: `${siteConfig.url}${note.href}`,
+    lastModified: new Date(note.date),
+    changeFrequency: 'monthly' as const,
+    priority: 0.6,
+  }))
+
+  return [...staticRoutes, ...articleRoutes, ...noteRoutes]
 }

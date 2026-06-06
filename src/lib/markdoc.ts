@@ -2,6 +2,7 @@ import Markdoc, { type Config, type RenderableTreeNode } from '@markdoc/markdoc'
 import React from 'react'
 import { Callout } from '@/components/markdoc/Callout'
 import { CodeBlock } from '@/components/markdoc/CodeBlock'
+import { MarkdocImage } from '@/components/markdoc/MarkdocImage'
 import { Note } from '@/components/markdoc/Note'
 import { Steps, Step } from '@/components/markdoc/Steps'
 
@@ -42,12 +43,20 @@ const config: Config = {
         content: { type: String },
       },
     },
+    image: {
+      render: 'MarkdocImage',
+      attributes: {
+        src: { type: String },
+        alt: { type: String },
+      },
+    },
   },
 }
 
 const components = {
   Callout,
   CodeBlock,
+  MarkdocImage,
   Note,
   Steps,
   Step,

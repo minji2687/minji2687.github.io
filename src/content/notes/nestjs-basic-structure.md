@@ -7,7 +7,7 @@ tags: ["NestJS", "TypeScript", "Backend"]
 
 ## NestJS란
 
-NestJS는 TypeScript 기반의 Node.js 백엔드 프레임워크다. Express 위에서 동작하지만, Angular에서 영감을 받은 **모듈 구조와 데코레이터 패턴**을 사용해서 코드를 체계적으로 관리할 수 있다.
+NestJS는 TypeScript 기반의 Node.js 백엔드 프레임워크다. 기본적으로 Express를 HTTP 플랫폼으로 사용하지만, Fastify 같은 다른 어댑터로 교체할 수도 있다. Angular에서 영감을 받은 **모듈 구조와 데코레이터 패턴**을 사용해서 코드를 체계적으로 관리할 수 있다.
 
 가장 큰 특징은 **의존성 주입(DI)** 과 **모듈 시스템**이다. 기능을 모듈 단위로 나누고, 클래스 간 의존 관계를 프레임워크가 알아서 관리해준다.
 
@@ -153,7 +153,39 @@ export interface ChatResponse {
 }
 ```
 
-DTO(Data Transfer Object)는 요청 body나 응답의 타입을 정의한다. Controller에서 `@Body() dto: ChatRequestDto`로 받으면 TypeScript가 타입을 보장해준다.
+DTO(Data Transfer Object)는 요청 body나 응답의 타입을 정의한다. `@Body() dto: ChatRequestDto`로 받으면 개발 시 타입 힌트를 받을 수 있다.
+
+단, TypeScript 타입은 **컴파일 타임에만 체크**된다. 실제 HTTP 요청으로 들어온 JSON은 런타임에서 자동 검증되지 않기 때문에, 운영 프로젝트에서는 `ValidationPipe`와 `class-validator`를 함께 써야 한다.
+
+```ts
+// main.ts — 전역 검증 파이프 등록
+import { ValidationPipe } from '@nestjs/common';
+
+app.useGlobalPipes(
+  new ValidationPipe({
+    whitelist: true,           // DTO에 없는 필드 자동 제거
+    forbidNonWhitelisted: true, // DTO에 없는 필드가 오면 에러
+    transform: true,           // 타입 자동 변환 (string → number 등)
+  }),
+);
+```
+
+```ts
+// chat.dto.ts — 런타임 검증 규칙 추가
+import { IsString, IsNotEmpty } from 'class-validator';
+
+export class ChatRequestDto {
+  @IsString()
+  @IsNotEmpty()
+  prompt: string;
+
+  @IsString()
+  @IsNotEmpty()
+  sessionId: string;
+}
+```
+
+이 프로젝트는 학습용이라 ValidationPipe를 붙이지 않았지만, 실제 서비스라면 반드시 적용해야 한다.
 
 ---
 
@@ -186,7 +218,7 @@ ConfigModule.forRoot({
 })
 ```
 
-`.env` 파일을 읽어서 `process.env`로 접근할 수 있게 해주는 공식 모듈이다. `isGlobal: true`로 설정하면 다른 모듈에서 따로 import 없이도 쓸 수 있다.
+`@nestjs/config`에서 제공하는 공식 모듈이다. `.env` 파일을 읽어서 환경변수를 로드하고, `ConfigService`를 통해 값을 가져올 수 있게 해준다. `isGlobal: true`로 설정하면 각 모듈에서 `ConfigModule`을 반복 import하지 않아도 된다.
 
 ```ts
 // ConfigService로 타입 안전하게 접근
@@ -206,7 +238,9 @@ const apiKey = this.configService.get<string>('OPENAI_API_KEY');
 export class RedisModule {}
 ```
 
-`@Global()`을 붙이면 이 모듈을 다른 모듈에서 `imports`에 명시하지 않아도 내부 서비스를 주입받을 수 있다. 앱 전체에서 공통으로 쓰는 인프라(Redis, DB 연결 등)에 쓴다.
+`@Global()`을 붙이면 루트 모듈(`AppModule`)에서 한 번만 import해두면, 이후 다른 모듈에서 `imports`에 반복적으로 추가하지 않아도 `exports`된 서비스를 주입받을 수 있다.
+
+Redis, DB 연결처럼 앱 전체에서 공통으로 쓰는 인프라 모듈에 쓴다. 단, 모든 모듈을 `@Global()`로 만들면 모듈 간 결합도가 높아져 의존 관계 파악이 어려워지므로 꼭 필요한 경우에만 사용해야 한다.
 
 ---
 

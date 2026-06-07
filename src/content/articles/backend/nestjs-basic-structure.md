@@ -2,8 +2,11 @@
 title: "NestJS 기본 구조와 LLM 채팅 서버에 적용하기"
 description: "Module, Controller, Service, DI 개념 정리와 실제 프로젝트 적용 방법"
 date: "2026-06-06"
+category: "Backend"
 tags: ["NestJS", "TypeScript", "Backend"]
 ---
+
+# NestJS 기본 구조와 LLM 채팅 서버에 적용하기
 
 ## NestJS란
 

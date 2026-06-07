@@ -23,6 +23,7 @@ export const siteConfig = {
     { slug: 'aws-infra', name: 'AWS / Infra' },
     { slug: 'map-geoserver', name: 'Map / GeoServer' },
     { slug: 'ai-study', name: 'AI Study' },
+    { slug: 'backend', name: 'Backend' },
   ],
 }
 

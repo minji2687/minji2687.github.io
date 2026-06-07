@@ -20,9 +20,10 @@ export function Hero() {
         </p>
 
         <p className="mt-6 text-base leading-8 text-[var(--muted)]">
-          Frontend developer focused on interfaces, documentation systems, and
-          map-based services. I build thoughtful UIs, structure technical
-          content, and care deeply about developer experience.
+          Frontend developer with 5 years of experience building real-time,
+          data-heavy interfaces. I turn MQTT/WebSocket/IoT device data into
+          reliable, map-based UIs — from web dashboards to React Native
+          control apps.
         </p>
 
         <div className="mt-8 flex flex-wrap gap-3">
@@ -54,10 +55,10 @@ export function Hero() {
         <div className="mt-10 flex flex-wrap gap-6 text-sm text-[var(--muted)]">
           {[
             { label: 'Frontend', icon: '⚡' },
+            { label: 'Realtime / IoT', icon: '📡' },
             { label: 'React Native', icon: '📱' },
             { label: 'Map / GeoServer', icon: '🗺️' },
             { label: 'AWS / Infra', icon: '☁️' },
-            { label: 'Technical Docs', icon: '📝' },
           ].map((skill) => (
             <span key={skill.label} className="flex items-center gap-1.5">
               <span>{skill.icon}</span>

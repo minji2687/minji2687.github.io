@@ -2,7 +2,8 @@ export const siteConfig = {
   name: 'Minji Jo',
   title: 'Minji Jo — Frontend Developer',
   description:
-    'Frontend developer focused on interfaces, documentation systems, and map-based services.',
+
+  'Frontend developer focused on real-time data systems, IoT-driven interfaces, and map-based visualization.',
   url: 'https://minji-dev-blog.vercel.app',
   author: {
     name: 'Minji Jo',

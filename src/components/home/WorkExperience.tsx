@@ -14,8 +14,8 @@ const workHistory: WorkItem[] = [
     role: 'Frontend Developer',
     period: '2022 — 현재',
     description:
-      'Next.js 기반 사용자 매뉴얼 시스템 구축, React Native 앱 개발, AWS 인프라 연동, GeoServer 기반 지도 서비스 개발에 참여했습니다.',
-    tags: ['Next.js', 'React Native', 'AWS', 'GeoServer', 'TypeScript'],
+      '농기계 자율주행 플랫폼에서 MQTT/WebSocket/AWS IoT Core 기반 실시간 모니터링 웹과 React Native 원격 제어 앱을 개발하고, MapLibre 기반 위치 시각화와 다국어 운영형 서비스를 구축했습니다.',
+    tags: ['Next.js', 'React Native', 'MQTT', 'AWS IoT Core', 'MapLibre'],
   },
 ]
 

@@ -6,6 +6,58 @@ export const metadata: Metadata = {
   description: 'Minji Jo — Frontend Developer 소개',
 }
 
+type WorkItem = {
+  period: string
+  company: string
+  team: string
+  level: string
+  bullets: string[]
+}
+
+const workHistory: WorkItem[] = [
+  {
+    period: '2023.07 – 2026.04',
+    company: '긴트',
+    team: '비지니스 플랫폼팀',
+    level: '주임',
+    bullets: [
+      '농기계 자율주행 서비스의 실시간 모니터링 웹·운영 어드민·원격 제어 앱 프론트엔드 개발 및 유지보수',
+      'Next.js, React, TypeScript, React Native 기반으로 웹·모바일 서비스 구축 및 운영',
+      'MQTT, WebSocket, AWS IoT Core 기반 실시간 데이터 연동 및 장비 상태 모니터링 화면 개발',
+      'MapLibre 기반 위치·주행 경로 시각화, 운영 KPI 대시보드 및 관리자 기능 구현',
+      'React Native 네이티브 모듈 연동 — 카메라 접근, CAN 데이터 삽입, 자동 재연결 로직 구현',
+      'Zustand / Recoil / React Query 기반 상태관리 개선 및 검색 기능 리팩터링',
+      '다국어(i18n), QR·바코드 스캔 등 사내 공통 라이브러리 운영 효율화',
+    ],
+  },
+  {
+    period: '2022.05 – 2023.05',
+    company: '서울옥션',
+    team: '웹서비스개발팀',
+    level: '선임',
+    bullets: [
+      '미술품 경매 플랫폼의 통합 어드민 및 플래퍼(리뉴얼 프론트엔드) 개발 및 운영',
+      'Next.js / React / Redux / React Query 기반 콘텐츠·검색·필터·로그인·실명인증·등록 화면 개발',
+      '고객 상세·거래내역·문의응답·상태변환 등 핵심 어드민 기능 고도화',
+      '인피니트 스크롤, Drag & Drop 정렬 등 UX 효율 개선 기능 구현',
+      '금액 이미지 박스 모듈 및 인쇄 미리보기 컴포넌트 개발로 유지보수성 개선',
+    ],
+  },
+  {
+    period: '2019.02 – 2020.05',
+    company: '미스터블루',
+    team: '솔루션 개발팀',
+    level: '연구원',
+    bullets: [
+      '웹툰·소설 앱 리뷰어 및 웹 콘텐츠 뷰어 솔루션 개발',
+      'React, TypeScript, MobX 기반 회차 리스트·뷰어·설정 등 개인화 인터랙션 UI 구현',
+      '미디어쿼리 기반 반응형·적응형 레이아웃으로 크로스 플랫폼 호환 뷰어 컴포넌트 개발',
+      'jQuery 기반 레거시 뷰어를 React로 전환하여 구조 개선 및 유지보수성 향상',
+      '웹 배포 관리 서비스에서 로그인·파일 업로드·배포 상태 관리 등 운영 기능 개발',
+    ],
+  },
+]
+
 export default function AboutPage() {
   return (
     <Container className="py-16">
@@ -15,9 +67,7 @@ export default function AboutPage() {
         </h1>
 
         <div className="mt-8 space-y-6 text-base leading-8 text-[var(--muted)]">
-          <p>
-            안녕하세요, 5년차 프론트엔드 개발자 조민지입니다.
-          </p>
+          <p>안녕하세요, 5년차 프론트엔드 개발자 조민지입니다.</p>
           <p>
             최근 3년간 농기계 자율주행 플랫폼에서 MQTT/WebSocket/AWS IoT Core
             기반 실시간 데이터를 다루며, 하드웨어 단말기의 데이터가 사용자
@@ -63,6 +113,53 @@ export default function AboutPage() {
               )}
             </div>
           ))}
+        </div>
+
+        <div className="mt-16">
+          <div className="flex items-baseline gap-3">
+            <h2 className="text-lg font-semibold text-[var(--foreground)]">
+              Work Experience
+            </h2>
+            <span className="text-sm text-[var(--accent)]">총 5년</span>
+          </div>
+
+          <ul className="mt-8 space-y-10">
+            {workHistory.map((item) => (
+              <li key={item.company} className="flex flex-col gap-1 sm:flex-row sm:gap-8">
+                <div className="shrink-0 sm:w-40">
+                  <p className="text-sm tabular-nums text-[var(--muted)]">
+                    {item.period}
+                  </p>
+                </div>
+
+                <div className="flex-1">
+                  <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                    <h3 className="text-base font-semibold text-[var(--foreground)]">
+                      {item.company}
+                    </h3>
+                    <span className="text-sm text-[var(--muted)]">
+                      {item.team}
+                    </span>
+                    <span className="text-xs text-[var(--accent)]">
+                      {item.level}
+                    </span>
+                  </div>
+
+                  <ul className="mt-3 space-y-1.5">
+                    {item.bullets.map((bullet) => (
+                      <li
+                        key={bullet}
+                        className="flex gap-2 text-sm leading-relaxed text-[var(--muted)]"
+                      >
+                        <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-[var(--muted)] opacity-50" />
+                        <span>{bullet}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </Container>

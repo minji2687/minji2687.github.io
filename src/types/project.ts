@@ -5,7 +5,7 @@ export type ProjectLink = {
   href: string
 }
 
-export type Project = {
+export type ProjectFrontmatter = {
   title: string
   description: string
   date: string
@@ -14,7 +14,11 @@ export type Project = {
   links?: ProjectLink[]
   featured?: boolean
   coverImage?: string
+}
+
+export type Project = ProjectFrontmatter & {
   slug: string
+  href: string
   content: string
 }
 

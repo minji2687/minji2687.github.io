@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { Container } from '@/components/layout/Container'
 import { Badge } from '@/components/ui/Badge'
 import { getAllProjects } from '@/lib/projects'
@@ -30,9 +31,10 @@ export default async function ProjectsPage() {
 
       <ul className="space-y-5">
         {projects.map((project) => (
-          <li
-            key={project.slug}
-            className="rounded-xl border border-[var(--border-color)] bg-[var(--card-bg)] p-5 shadow-sm transition-all hover:border-[var(--accent)]/40 hover:shadow-md"
+          <li key={project.slug}>
+          <Link
+            href={project.href}
+            className="block rounded-xl border border-[var(--border-color)] bg-[var(--card-bg)] p-5 shadow-sm transition-all hover:border-[var(--accent)]/40 hover:shadow-md"
           >
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
@@ -74,6 +76,7 @@ export default async function ProjectsPage() {
                 {project.date}
               </time>
             </div>
+          </Link>
           </li>
         ))}
       </ul>

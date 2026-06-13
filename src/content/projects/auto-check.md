@@ -31,6 +31,8 @@ featured: true
 
 단말기마다 토픽이 다르고, 모니터링 화면에서 구독해야 할 토픽이 GPS·상태머신·알림 등 여러 종류였다. 연결 하나를 유지하면서 토픽만 동적으로 구독·해제하는 방식으로 구성했다.
 
+→ [MQTT over WebSocket — 브라우저에서 실시간 IoT 데이터 받기](/articles/frontend/mqtt-websocket-aws-iot)
+
 ---
 
 ## 2. JWT 쿠키 4KB 초과 → iOS 세션 버그

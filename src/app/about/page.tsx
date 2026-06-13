@@ -9,6 +9,7 @@ export const metadata: Metadata = {
 type WorkItem = {
   period: string
   company: string
+  companyDesc?: string
   team: string
   level: string
   bullets: string[]
@@ -18,29 +19,31 @@ const workHistory: WorkItem[] = [
   {
     period: '2023.07 – 2026.04',
     company: '긴트',
+    companyDesc: '농기계 자율주행 회사',
     team: '비지니스 플랫폼팀',
     level: '주임',
     bullets: [
-      '농기계 자율주행 서비스의 실시간 모니터링 웹·운영 어드민·원격 제어 앱 프론트엔드 개발 및 유지보수',
+      '농기계 자율주행 서비스의 실시간 모니터링 웹/운영 어드민/원격 제어 앱 프론트엔드 개발 및 유지보수',
       'Next.js, React, TypeScript, React Native 기반으로 웹·모바일 서비스 구축 및 운영',
       'MQTT, WebSocket, AWS IoT Core 기반 실시간 데이터 연동 및 장비 상태 모니터링 화면 개발',
       'MapLibre 기반 위치·주행 경로 시각화, 운영 KPI 대시보드 및 관리자 기능 구현',
-      'React Native 네이티브 모듈 연동 — 카메라 접근, CAN 데이터 삽입, 자동 재연결 로직 구현',
-      'Zustand / Recoil / React Query 기반 상태관리 개선 및 검색 기능 리팩터링',
-      '다국어(i18n), QR·바코드 스캔 등 사내 공통 라이브러리 운영 효율화',
+      'React Native 전기트랙터 원격 제어 앱 개발: 제어 UI, CAN 데이터 파싱, 상태 관리, 자동 재연결 로직 구현',
+      'Zustand/Redux/React Query 기반 상태관리 및 데이터 흐름 개선, 레거시 리팩토링 수행',
+      '다국어(i18n), 공통 컴포넌트, 반응형 UI, QR/바코드 스캔 기능 적용으로 운영 효율 향상',
     ],
   },
   {
     period: '2022.05 – 2023.05',
     company: '서울옥션',
+    companyDesc: '미술품을 경매하는 회사',
     team: '웹서비스개발팀',
     level: '선임',
     bullets: [
-      '미술품 경매 플랫폼의 통합 어드민 및 플래퍼(리뉴얼 프론트엔드) 개발 및 운영',
-      'Next.js / React / Redux / React Query 기반 콘텐츠·검색·필터·로그인·실명인증·등록 화면 개발',
-      '고객 상세·거래내역·문의응답·상태변환 등 핵심 어드민 기능 고도화',
-      '인피니트 스크롤, Drag & Drop 정렬 등 UX 효율 개선 기능 구현',
-      '금액 이미지 박스 모듈 및 인쇄 미리보기 컴포넌트 개발로 유지보수성 개선',
+      '미술품 경매 플랫폼의 통합 어드민 및 홈페이지 리뉴얼 프론트엔드 개발 참여',
+      'Next.js/React/Redux/React Query 기반으로 고객 관리, 콘텐츠 운영, 검색/필터, 등록·수정 화면 구현',
+      '고객 상세/거래내역/문의응답/상태변경 등 운영형 백오피스 기능 개발',
+      '페이지 간 검색 조건 유지, 권한별 기능 제어, Drag & Drop 정렬 등 운영 효율을 높이는 UI/기능 구현',
+      '홈페이지 공통 이미지 뷰어 모듈화 및 전시 메뉴 데이터 연동으로 유지보수성 개선',
     ],
   },
   {
@@ -137,6 +140,11 @@ export default function AboutPage() {
                     <h3 className="text-base font-semibold text-[var(--foreground)]">
                       {item.company}
                     </h3>
+                    {item.companyDesc && (
+                      <span className="text-sm text-[var(--muted)]">
+                        {item.companyDesc}
+                      </span>
+                    )}
                     <span className="text-sm text-[var(--muted)]">
                       {item.team}
                     </span>

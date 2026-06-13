@@ -2,9 +2,7 @@
 title: "React Native에서 FCM 마이그레이션하며 배운 점"
 description: "AWS Pinpoint에서 Firebase Cloud Messaging으로 전환하면서 정리한 구조와 주의점. 토큰 발급, 권한 처리, 백엔드 연동 흐름을 중심으로 설명한다."
 date: "2026-05-24"
-category: "React Native"
 tags: ["React Native", "FCM", "Push Notification", "AWS Pinpoint"]
-featured: false
 ---
 
 # React Native에서 FCM 마이그레이션하며 배운 점

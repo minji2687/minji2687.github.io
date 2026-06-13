@@ -8,6 +8,48 @@ export const metadata: Metadata = {
 
 const usesData = [
   {
+    category: 'Frontend',
+    items: [
+      { name: 'React', description: '' },
+      { name: 'Next.js', description: '' },
+      { name: 'TypeScript', description: '' },
+      { name: 'React Native', description: '' },
+      { name: 'Tailwind CSS', description: '' },
+    ],
+  },
+  {
+    category: 'Realtime',
+    items: [
+      { name: 'MQTT', description: '' },
+      { name: 'WebSocket', description: '' },
+      { name: 'AWS IoT Core', description: '' },
+      { name: 'AppSync', description: '' },
+    ],
+  },
+  {
+    category: 'State / Data',
+    items: [
+      { name: 'Zustand', description: '' },
+      { name: 'Redux Toolkit', description: '' },
+      { name: 'React Query', description: '' },
+    ],
+  },
+  {
+    category: 'Infra / Delivery',
+    items: [
+      { name: 'AWS Amplify', description: '' },
+      { name: 'S3', description: '' },
+      { name: 'Cognito', description: '' },
+    ],
+  },
+  {
+    category: 'Global UX',
+    items: [
+      { name: 'next-intl', description: '' },
+      { name: 'react-i18next', description: '' },
+    ],
+  },
+  {
     category: 'Editor',
     items: [
       { name: 'Cursor', description: 'AI 기능 덕분에 생산성이 크게 올랐다.' },
@@ -18,28 +60,6 @@ const usesData = [
     category: 'Terminal',
     items: [
       { name: 'iTerm2 + zsh', description: 'Oh My Zsh + Starship 조합.' },
-    ],
-  },
-  {
-    category: 'Frontend',
-    items: [
-      { name: 'Next.js', description: 'React 프레임워크 기본 선택.' },
-      { name: 'Tailwind CSS', description: 'v4부터 CSS 변수 기반으로 더 유연해졌다.' },
-      { name: 'TypeScript', description: '모든 프로젝트에 사용.' },
-    ],
-  },
-  {
-    category: 'Mobile',
-    items: [
-      { name: 'React Native', description: 'iOS/Android 동시 개발.' },
-      { name: 'Xcode / Android Studio', description: '시뮬레이터 및 빌드.' },
-    ],
-  },
-  {
-    category: 'Deployment',
-    items: [
-      { name: 'Vercel', description: '프론트엔드 기본 배포 플랫폼.' },
-      { name: 'AWS', description: 'S3, CloudFront, Cognito 등 활용.' },
     ],
   },
 ]
@@ -68,9 +88,11 @@ export default function UsesPage() {
                   <p className="text-base font-semibold text-[var(--foreground)]">
                     {item.name}
                   </p>
-                  <p className="mt-0.5 text-sm leading-relaxed text-[var(--muted)]">
-                    {item.description}
-                  </p>
+                  {item.description && (
+                    <p className="mt-0.5 text-sm leading-relaxed text-[var(--muted)]">
+                      {item.description}
+                    </p>
+                  )}
                 </li>
               ))}
             </ul>

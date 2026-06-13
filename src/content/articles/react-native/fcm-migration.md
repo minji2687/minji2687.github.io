@@ -4,7 +4,7 @@ description: "AWS Pinpoint에서 Firebase Cloud Messaging으로 전환하면서 
 date: "2026-05-24"
 category: "React Native"
 tags: ["React Native", "FCM", "Push Notification", "AWS Pinpoint"]
-featured: true
+featured: false
 ---
 
 # React Native에서 FCM 마이그레이션하며 배운 점

@@ -37,15 +37,13 @@ featured: true
 
 ## 2. JWT 쿠키 4KB 초과 → iOS 세션 버그
 
-가장 오래 잡은 버그다.
+NextAuth JWT payload에 Cognito 토큰 3종(accessToken, idToken, refreshToken)과 DynamoDB 호출에 쓰던 AWS 임시 자격증명 4개 필드를 모두 담았다. 개발 환경에서는 문제없었는데 실사용 중 iOS Chrome에서 종종 세션 에러가 났다.
 
-NextAuth JWT payload에 Cognito에서 받은 토큰 3종(accessToken, idToken, refreshToken)과 AWS 임시 자격증명 4개 필드를 모두 넣었다. 개발 환경에서는 문제없었는데, 실사용 중 iOS Chrome에서 세션이 계속 끊겼다.
+원인은 CloudWatch에서 찾았다. 쿠키 사이즈 관련 에러가 찍혀 있었고, 4KB를 초과한 쿠키가 iOS Chrome에서 3개로 청킹되는 과정에서 세션이 깨지고 있었다.
 
-원인을 찾는 데 시간이 걸렸다. 쿠키 크기가 4KB를 넘으면 iOS Chrome이 자동으로 청킹하는데, 그 과정에서 세션 쿠키가 깨졌다. 개발자 도구에서 쿠키 크기를 직접 재보고 나서야 원인을 특정할 수 있었다.
+해결은 JWT payload를 줄이는 것이었다. AWS 자격증명은 그때까지 API 호출마다 쿠키에서 꺼내 DynamoDB 클라이언트를 만드는 방식이었는데, 서버에 IAM Role을 부여하는 방식으로 전환해 쿠키에서 완전히 제거했다. accessToken과 idToken은 코드베이스 어디서도 직접 쓰이지 않아서 함께 제거했다. JWT에는 refreshToken과 최소한의 메타데이터만 남겼다.
 
-해결은 payload를 줄이는 것이었다. 코드베이스를 살펴보니 클라이언트 측에서 accessToken과 idToken을 직접 쓰는 곳이 없었다. 두 토큰을 JWT에서 제거했다. AWS 임시 자격증명도 IAM Role 기반으로 전환해서 쿠키에 담지 않았다. 결과적으로 payload 크기가 약 70% 줄었고 버그가 사라졌다.
-
-덤으로 민감한 자격증명이 쿠키에 노출되지 않는 구조가 됐다. JWT에는 꼭 필요한 것만 담아야 한다는 걸 몸으로 배운 경험이었다.
+→ [코드 레벨 상세](/notes/nextauth-jwt-cookie-overflow)
 
 ---
 

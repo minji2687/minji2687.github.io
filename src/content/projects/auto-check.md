@@ -53,6 +53,24 @@ MQTT 연결은 브라우저 탭이 백그라운드로 내려가면 끊기거나 
 
 `visibilitychange` 이벤트를 감지해 탭이 백그라운드로 내려가면 5분 타이머를 시작하고, 5분이 지나면 연결을 명시적으로 끊는다. 탭이 다시 활성화될 때 타이머를 취소하고, 연결이 끊겨있으면 재연결한다. 재연결할 때 연결만 다시 맺는 게 아니라 구독 토픽도 다시 등록해야 한다. 연결 상태와 구독 상태를 분리해서 관리했고, 재연결 흐름을 하나의 함수로 정리해 어디서든 호출할 수 있게 했다.
 
+```ts
+const handleVisibilityChange = () => {
+  if (document.visibilityState === "hidden") {
+    backgroundTimerRef.current = setTimeout(() => {
+      disconnect().catch(console.error);
+    }, 5 * 60 * 1000);
+  } else if (document.visibilityState === "visible") {
+    if (backgroundTimerRef.current) {
+      clearTimeout(backgroundTimerRef.current);
+      backgroundTimerRef.current = null;
+    }
+    if (!isConnected()) {
+      initializeMqtt();
+    }
+  }
+};
+```
+
 실시간 데이터를 다루는 서비스에서 "연결이 끊기는 상황"을 예외가 아닌 기본 전제로 설계해야 한다는 걸 이 과정에서 배웠다.
 
 ---

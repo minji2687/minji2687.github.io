@@ -152,7 +152,7 @@ const CF_HitchPosAct = canFrame.parseData({
 
 제어 상태는 Zustand 스토어 하나로 모았다. 사용자가 버튼이나 슬라이더를 조작하면 스토어 상태가 바뀌고, 그 변경이 WebSocket을 통해 차량으로 전송되는 흐름을 표준화했다. 화면마다 따로 상태를 들고 전송 로직을 짜지 않고, "조작 → 상태 업데이트 → 전송"이라는 한 가지 패턴만 따르도록 했다.
 
-**보내는 흐름** — 탭에서 버튼/슬라이더 조작 → `useControlStore` 갱신 → `sendDataOnEvent()` 호출 → `updateAndSendData`가 스토어 값을 비트 단위로 buffer에 채움 → `sendBuffer`가 그 buffer를 WebSocket으로 전송(`action: 'canDataToEquipment'`).
+**보내는 흐름** — 기본적으로 연결돼 있는 동안 500ms마다 현재 스토어 상태를 자동으로 반복 전송한다. 그런데 사용자가 버튼/슬라이더를 조작한 순간에도 이 자동 전송 타이머가 우연히 같이 발동하면, 같은 데이터가 두 번 보내질 수 있다. 그래서 조작이 일어나면(`sendDataOnEvent()`) ① 자동 전송 타이머를 멈추고 ② 그 자리에서 즉시 한 번만 보낸 뒤 ③ 타이머를 다시 0부터 시작한다. 즉 "조작 시 전송"과 "주기적 전송"이 겹치지 않도록, 조작이 있을 때마다 주기적 전송의 카운트를 리셋하는 방식이다. 실제 전송 자체는 `updateAndSendData`가 스토어 값을 비트 단위로 buffer에 채운 뒤 `sendBuffer`가 그 buffer를 WebSocket으로 보낸다(`action: 'canDataToEquipment'`).
 
 **받는 흐름** — 차량 단말기가 CAN 프레임을 WebSocket으로 전송 → `App.tsx`의 메시지 리스너가 `action: 'canDataToApp'`을 받으면 `handleCanData` 호출 → CAN ID(`0x341`~`0x344`)별로 비트 위치를 파싱해 필드를 뽑아냄 → 상태값은 `useStateStore`, 고장 코드는 `useTroubleStore`에 반영 → 두 스토어를 구독 중인 화면(StateScreen, TroubleScreen 등)이 자동으로 다시 그려짐.
 
@@ -164,3 +164,4 @@ const CF_HitchPosAct = canFrame.parseData({
 
 - [ ] alive-signal 5초 타이머 값을 어떻게 정했는지(현장 네트워크 환경 기준) 보강
 - [ ] 관련 이미지(제어 UI 스크린샷) 추가
+- [ ] 보내는 흐름/받는 흐름(인터벌+이벤트 중복 방지, CAN 바이너리 파싱)을 별도 아티클로 정리 — 면접 준비용으로도 활용

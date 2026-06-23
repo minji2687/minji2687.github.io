@@ -57,8 +57,8 @@ export function Hero() {
             { label: 'Frontend', icon: '⚡' },
             { label: 'Realtime / IoT', icon: '📡' },
             { label: 'React Native', icon: '📱' },
-            { label: 'Map / GeoServer', icon: '🗺️' },
-            { label: 'AWS / Infra', icon: '☁️' },
+            { label: 'Data Visualization', icon: '🗺️' },
+            { label: 'TypeScript', icon: '🔷' },
           ].map((skill) => (
             <span key={skill.label} className="flex items-center gap-1.5">
               <span>{skill.icon}</span>

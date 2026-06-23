@@ -10,43 +10,88 @@ const usesData = [
   {
     category: 'Frontend',
     items: [
-      { name: 'React', description: '' },
-      { name: 'Next.js', description: '' },
-      { name: 'TypeScript', description: '' },
-      { name: 'React Native', description: '' },
-      { name: 'Tailwind CSS', description: '' },
+      {
+        name: 'React',
+        description:
+          '실시간 관제 웹, 원격 제어 RN 앱, 현장 설치 앱, 문서 사이트까지 — 긴트에서 단독 개발한 프로덕션 프로젝트 4건에서 기본 UI/상태 로직으로 사용.',
+      },
+      {
+        name: 'Next.js',
+        description:
+          'CRA + React Router로 시작해 App Router로 전환. 미들웨어 하나에서 next-intl 로케일 처리와 NextAuth 세션 인증을 함께 수행하고, 서버 컴포넌트에서 로케일별 메시지를 바로 렌더링하는 다국어 구조, Markdoc 통합까지 구현.',
+      },
+      {
+        name: 'TypeScript',
+        description:
+          '전 프로젝트 공통 기본 언어. Generics·Utility Types(Partial/Pick/Omit/Record)는 편하게 쓰고, Conditional/Mapped Types는 필요할 때 가끔 사용.',
+      },
+      {
+        name: 'React Native',
+        description:
+          '농기계 원격 제어 앱에서 CAN 바이너리 데이터 파싱, MQTT+WebSocket 이중 통신까지 구현.',
+      },
+      { name: 'Tailwind CSS', description: 'v4까지 포함해 여러 프로젝트에서 기본 스타일링으로 사용.' },
     ],
   },
   {
     category: 'Realtime',
     items: [
-      { name: 'MQTT', description: '' },
-      { name: 'WebSocket', description: '' },
-      { name: 'AWS IoT Core', description: '' },
-      { name: 'AppSync', description: '' },
+      {
+        name: 'MQTT',
+        description:
+          '브라우저(aws-crt)와 React Native(react-native-paho-mqtt) 양쪽에서 AWS IoT Core 연결 구현.',
+      },
+      {
+        name: 'WebSocket',
+        description: 'AWS API Gateway 기반으로 제어 명령 송신·실시간 데이터 수신 구조를 직접 설계.',
+      },
+      {
+        name: 'AWS IoT Core',
+        description: 'MQTT 브로커로 사용, Custom Authorizer 인증과 동적 토픽 구독까지 다뤄봄.',
+      },
+      {
+        name: 'AWS API Gateway',
+        description: 'WebSocket API로 양방향 실시간 통신 구현.',
+      },
     ],
   },
   {
     category: 'State / Data',
     items: [
-      { name: 'Zustand', description: '' },
-      { name: 'Redux Toolkit', description: '' },
-      { name: 'React Query', description: '' },
+      {
+        name: 'Zustand',
+        description: '도메인별 스토어 분리, 서버 상태와의 부분 동기화까지 다뤄봄.',
+      },
     ],
   },
   {
     category: 'Infra / Delivery',
     items: [
-      { name: 'AWS Amplify', description: '' },
-      { name: 'S3', description: '' },
-      { name: 'Cognito', description: '' },
+      {
+        name: 'AWS Amplify',
+        description: '브랜치별(dev/prod) CI/CD 파이프라인을 콘솔에서 직접 구성.',
+      },
+      {
+        name: 'Cognito',
+        description: 'NextAuth와 연동해 임시 자격증명 발급, 쿠키 크기 초과 버그를 IAM Role 전환으로 해결한 경험.',
+      },
+      {
+        name: 'NextAuth',
+        description: 'JWT 세션에 자격증명을 직접 담다가 쿠키 크기 초과 버그를 겪고 구조를 개선.',
+      },
+      {
+        name: 'Bitbucket Pipelines',
+        description: 'GitBook 문서 변경을 감지해 자동 동기화·커밋하는 파이프라인 구성.',
+      },
     ],
   },
   {
     category: 'Global UX',
     items: [
-      { name: 'next-intl', description: '' },
-      { name: 'react-i18next', description: '' },
+      {
+        name: 'next-intl',
+        description: 'App Router 미들웨어 기반 로케일 라우팅, 서버 컴포넌트 번역까지 구현.',
+      },
     ],
   },
   {

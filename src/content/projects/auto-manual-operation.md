@@ -1,5 +1,5 @@
 ---
-title: GitBook → 4개 매뉴얼 사이트 자동 동기화 파이프라인
+title: 농기계 매뉴얼 자동 동기화 파이프라인
 description: GitBook으로 작성하는 농기계 사용자/서비스/OEM 매뉴얼 콘텐츠를 Next.js + Markdoc 기반 4개 독립 사이트로 자동 변환·배포하는 문서 파이프라인. npm workspaces 모노레포 구성과 Bitbucket Pipelines 자동 동기화까지 단독 개발.
 date: "2026-01"
 tags:
@@ -8,12 +8,15 @@ tags:
   - Markdoc
   - GitBook
   - Node.js
+  - 모노레포
   - Bitbucket Pipelines
 status: active
 featured: false
 ---
 
 ## 배경
+
+![pluva ion 사용자 매뉴얼 홈](/images/auto-manual/usermanual-home.png)
 
 긴트의 자율주행 농기계 매뉴얼(사용설명서, 서비스/설치 매뉴얼)은 GitBook으로 작성된다. 그런데 이 콘텐츠를 보여줘야 하는 곳이 하나가 아니었다. 자사 사용자용(usermanual), 설치기사용(servicemanual), 구보다 OEM 브랜드용(kubodamanual, FKK)에 더해 PVSS 매뉴얼(pvssmanual)까지 4개 사이트가 각자 한국어/일본어로 존재했다. 콘텐츠가 바뀔 때마다 4곳에 손으로 옮기는 건 금방 한계에 부딪혔다.
 
@@ -39,6 +42,36 @@ npm workspaces 모노레포로 `apps/`, `packages/`, `scripts/` 세 영역으로
 **packages/ui** — 4개 앱이 공통으로 쓰는 Markdoc 컴포넌트(`Hint`, `Accordion`, `CardLink` 등)와 내비게이션 로직(`getHiddenPaths` 등)을 `@repo/ui`로 모아, 모든 앱이 `file:../../packages/ui`로 동일하게 참조하도록 정리했다. (브랜드별로 달라야 하는 kubodamanual의 LanguageSelector 같은 건 의도적으로 빼고 앱 로컬에 둔다.)
 
 **scripts/docs-sync** — 콘텐츠 동기화 엔진. `config/{app}.js`(앱별 GitBook 소스·언어셋·후처리 스크립트 정의) → `sync-docs.js`(클론 → 언어별 처리 → 후처리 → 정리, 5단계 메인 스크립트) → `convert-*.js`(GitBook 문법을 Markdoc 문법으로 바꾸는 변환기들) → `process-all.js`(변환기들을 파일 단위로 병렬 처리) 순으로 구성되며, `merge-local-manuals-to-kuboda.js`가 kubodamanual 전용 추가 병합 단계를 맡는다.
+
+예를 들어 `servicemanual`의 `config/servicemanual.js`는 이렇게 생겼다. GitBook 소스 저장소, 언어셋, 변환 결과가 떨어질 경로, 후처리 스크립트 목록을 한 곳에 선언해두고 `sync-docs.js`가 이 설정을 읽어 실행한다.
+
+```js
+const path = require('path');
+
+const APP_ROOT = path.join(__dirname, '../../../apps/servicemanual');
+
+module.exports = {
+  GITHUB_REPO: 'https://github.com/gint-service-dev/pluva-auto-document.git',
+  TEMP_DIR: 'temp-docs',
+  TARGET_BASE_DIR: path.join(APP_ROOT, 'src/app/ion'),
+  ASSETS_DIR: path.join(APP_ROOT, 'public/assets/ion'),
+  LANGUAGES: ['kr', 'jp'],
+  SOURCE_PREFIX: 'ion-servicemanual',
+  APP_ROOT,
+  /** 후처리 스크립트 (ownersmanual과 동일) */
+  POST_PROCESS_SCRIPTS: [
+    'convert-page-tables',
+    'convert-p-tags',
+    'process-frontmatter',
+    'convert-images',
+    'convert-mark-tags',
+    'convert-hint-blocks',
+    'convert-content-ref',
+    'convert-markdown-links',
+    'convert-anchor-tags',
+  ],
+};
+```
 
 전체 흐름은 한 문장으로: **GitBook(원본) → GitHub 미러 클론 → 디렉터리/문법 변환(Markdoc) → 각 앱의 `src/app` 아래 배치 → (kubodamanual만) 로컬 콘텐츠 추가 병합.**
 

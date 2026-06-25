@@ -33,12 +33,25 @@ export function SelectedProjects({ projects }: SelectedProjectsProps) {
           <li key={project.slug}>
             <div className="group flex h-full flex-col rounded-xl border border-[var(--border-color)] bg-[var(--card-bg)] p-4 shadow-sm transition-all hover:border-[var(--accent)]/40 hover:shadow-md">
               <div className="flex items-start justify-between gap-2">
-                <h3 className="text-base font-semibold text-[var(--foreground)]">
+                <h3 className="text-card-title font-semibold text-[var(--foreground)]">
                   {project.title}
                 </h3>
-                <span className="shrink-0 rounded-full border border-[var(--border-color)] px-2 py-0.5 text-xs text-[var(--muted)]">
-                  {statusLabel[project.status] ?? project.status}
-                </span>
+                <div className="flex shrink-0 gap-1.5">
+                  {project.org && (
+                    <span
+                      className={`rounded-full border px-2 py-0.5 text-xs ${
+                        project.org === '회사'
+                          ? 'border-blue-600/40 text-blue-600 dark:border-blue-400/40 dark:text-blue-400'
+                          : 'border-teal-600/40 text-teal-600 dark:border-teal-300/40 dark:text-teal-300'
+                      }`}
+                    >
+                      {project.org}
+                    </span>
+                  )}
+                  <span className="rounded-full border border-[var(--border-color)] px-2 py-0.5 text-xs text-[var(--muted)]">
+                    {statusLabel[project.status] ?? project.status}
+                  </span>
+                </div>
               </div>
 
               <p className="mt-2 flex-1 text-sm leading-relaxed text-[var(--muted)]">

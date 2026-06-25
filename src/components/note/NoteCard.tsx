@@ -15,7 +15,7 @@ export function NoteCard({ note }: NoteCardProps) {
     >
       <div className="flex-1">
         <div className="flex items-start justify-between gap-3">
-          <h2 className="text-base font-semibold leading-snug text-[var(--foreground)] transition-colors group-hover:text-[var(--accent)]">
+          <h2 className="text-card-title font-semibold leading-snug text-[var(--foreground)] transition-colors group-hover:text-[var(--accent)]">
             {note.title}
           </h2>
           <time

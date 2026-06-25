@@ -8,6 +8,7 @@ tags:
   - Tailwind CSS
   - TypeScript
 status: wip
+org: 개인
 featured: true
 links:
   - label: GitHub

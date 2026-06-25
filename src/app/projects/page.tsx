@@ -39,9 +39,20 @@ export default async function ProjectsPage() {
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-base font-semibold text-[var(--foreground)]">
+                  <h2 className="text-card-title font-semibold text-[var(--foreground)]">
                     {project.title}
                   </h2>
+                  {project.org && (
+                    <span
+                      className={`rounded-full border px-2 py-0.5 text-xs ${
+                        project.org === '회사'
+                          ? 'border-blue-600/40 text-blue-600 dark:border-blue-400/40 dark:text-blue-400'
+                          : 'border-teal-600/40 text-teal-600 dark:border-teal-300/40 dark:text-teal-300'
+                      }`}
+                    >
+                      {project.org}
+                    </span>
+                  )}
                   <span className="rounded-full border border-[var(--border-color)] px-2 py-0.5 text-xs text-[var(--muted)]">
                     {statusLabel[project.status] ?? project.status}
                   </span>

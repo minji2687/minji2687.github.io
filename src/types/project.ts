@@ -11,6 +11,7 @@ export type ProjectFrontmatter = {
   date: string
   tags: string[]
   status: ProjectStatus
+  org?: string
   links?: ProjectLink[]
   featured?: boolean
   coverImage?: string

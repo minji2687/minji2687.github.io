@@ -33,7 +33,7 @@ export function ArticleCard({ article, featured }: ArticleCardProps) {
                 {article.category}
               </span>
             </div>
-            <h2 className="mt-1 text-base font-semibold leading-snug text-[var(--foreground)] transition-colors group-hover:text-[var(--accent)]">
+            <h2 className="mt-1 text-card-title font-semibold leading-snug text-[var(--foreground)] transition-colors group-hover:text-[var(--accent)]">
               {article.title}
             </h2>
           </div>

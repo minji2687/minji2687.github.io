@@ -11,6 +11,10 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Lora", ui-serif, Georgia, serif;
   --font-mono: "Fira Code", ui-monospace, monospace;
+
+  /* 카드형 리스트 아이템(프로젝트/노트/아티클)의 제목 크기 */
+  --text-card-title: 17px;
+  --text-card-title--line-height: 1.4;
 }
 
 :root {

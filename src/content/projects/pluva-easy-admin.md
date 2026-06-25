@@ -11,6 +11,7 @@ tags:
   - next-intl
   - AWS Amplify
 status: active
+org: 회사
 featured: true
 ---
 

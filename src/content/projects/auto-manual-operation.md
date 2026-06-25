@@ -11,6 +11,7 @@ tags:
   - 모노레포
   - Bitbucket Pipelines
 status: active
+org: 회사
 featured: false
 ---
 

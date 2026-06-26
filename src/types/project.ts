@@ -15,6 +15,7 @@ export type ProjectFrontmatter = {
   links?: ProjectLink[]
   featured?: boolean
   coverImage?: string
+  draft?: boolean
 }
 
 export type Project = ProjectFrontmatter & {

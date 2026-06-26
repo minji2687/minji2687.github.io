@@ -31,6 +31,10 @@ const usesData = [
           '농기계 원격 제어 앱에서 CAN 바이너리 데이터 파싱, MQTT+WebSocket 이중 통신까지 구현.',
       },
       { name: 'Tailwind CSS', description: 'v4까지 포함해 여러 프로젝트에서 기본 스타일링으로 사용.' },
+      {
+        name: 'Markdoc',
+        description: 'GitBook 콘텐츠를 변환해 렌더링하는 문서 사이트와 개인 블로그에 사용.',
+      },
     ],
   },
   {
@@ -50,8 +54,12 @@ const usesData = [
         description: 'MQTT 브로커로 사용, Custom Authorizer 인증과 동적 토픽 구독까지 다뤄봄.',
       },
       {
-        name: 'AWS API Gateway',
-        description: 'WebSocket API로 양방향 실시간 통신 구현.',
+        name: 'AWS AppSync',
+        description: 'GraphQL Subscription 기반 실시간 데이터 수신을 프로젝트에서 사용한 경험 있음. 이후 WebSocket으로 전환.',
+      },
+      {
+        name: 'GraphQL Subscription',
+        description: 'AppSync와 함께 실시간 구독 구조로 사용. 운영 중 WebSocket 전환 작업도 직접 진행.',
       },
     ],
   },
@@ -61,6 +69,23 @@ const usesData = [
       {
         name: 'Zustand',
         description: '도메인별 스토어 분리, 서버 상태와의 부분 동기화까지 다뤄봄.',
+      },
+    ],
+  },
+  {
+    category: 'Map / Visualization',
+    items: [
+      {
+        name: 'MapLibre GL',
+        description: '농기계 실시간 위치·주행 경로 시각화에 사용. 지도 위 마커·경로 레이어를 동적으로 렌더링.',
+      },
+      {
+        name: 'D3',
+        description: 'KPI 대시보드에서 차트 시각화에 사용.',
+      },
+      {
+        name: 'Canvas 2D',
+        description: '지도 마커를 SVG에서 Canvas로 전환해 줌·팬 리페인트 부하를 줄인 경험. RAF로 지형 SVG와 분리해 렌더링.',
       },
     ],
   },
@@ -121,7 +146,7 @@ export default function UsesPage() {
         </p>
       </div>
 
-      <div className="max-w-2xl space-y-10">
+      <div className="max-w-2xl space-y-14">
         {usesData.map((section) => (
           <section key={section.category}>
             <h2 className="mb-4 border-b border-[var(--border-color)] pb-2 text-xs font-semibold uppercase tracking-widest text-[var(--muted)]">
@@ -130,11 +155,11 @@ export default function UsesPage() {
             <ul className="space-y-5">
               {section.items.map((item) => (
                 <li key={item.name}>
-                  <p className="text-base font-semibold text-[var(--foreground)]">
+                  <p className="text-card-title font-semibold text-[var(--foreground)]">
                     {item.name}
                   </p>
                   {item.description && (
-                    <p className="mt-0.5 text-sm leading-relaxed text-[var(--muted)]">
+                    <p className="mt-0.5 text-[15px] leading-relaxed text-[var(--muted)]">
                       {item.description}
                     </p>
                   )}

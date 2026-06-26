@@ -38,9 +38,9 @@ export async function getAllProjects(): Promise<Project[]> {
     } satisfies Project
   })
 
-  return projects.sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-  )
+  return projects
+    .filter((p) => !p.draft)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 }
 
 export async function getFeaturedProjects(): Promise<ProjectMeta[]> {

@@ -50,9 +50,10 @@ export async function getAllArticles(): Promise<Article[]> {
 
 export async function getFeaturedArticles(): Promise<ArticleMeta[]> {
   const articles = await getAllArticles()
-  return articles
-    .filter((a) => a.featured)
-    .slice(0, 5)
+  const featured = articles.filter((a) => a.featured)
+  const latest = articles.filter((a) => !a.featured)
+  return [...featured, ...latest]
+    .slice(0, 3)
     .map(({ content: _content, ...meta }) => meta)
 }
 

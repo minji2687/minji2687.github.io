@@ -4,7 +4,7 @@ description: "농기계 자율주행 모니터링 프로젝트에서 AWS IoT Cor
 date: "2026-06-13"
 category: "Frontend"
 tags: ["MQTT", "WebSocket", "AWS IoT Core", "실시간", "IoT"]
-featured: true
+featured: false
 ---
 
 # MQTT over WebSocket — 브라우저에서 실시간 IoT 데이터 받기

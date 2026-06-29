@@ -4,7 +4,7 @@ description: "useState, useReducer, Context, Zustand, Jotai까지. 상황별로 
 date: "2026-04-20"
 category: "Frontend"
 tags: ["React", "State Management", "Zustand", "Jotai"]
-featured: true
+featured: false
 ---
 
 # React 상태 관리, 언제 무엇을 쓸까

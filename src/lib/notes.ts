@@ -3,6 +3,12 @@ import path from 'path'
 import glob from 'fast-glob'
 import yaml from 'js-yaml'
 import type { Note, NoteFrontmatter, NoteMeta } from '@/types/note'
+import { noteCategories } from '@/lib/site'
+
+const isDev = process.env.NODE_ENV === 'development'
+const localOnlyCategories = new Set(
+  noteCategories.filter((c) => c.localOnly).map((c) => c.slug)
+)
 
 const NOTES_DIR = path.join(process.cwd(), 'src/content/notes')
 
@@ -44,7 +50,7 @@ export async function getAllNotes(): Promise<Note[]> {
   })
 
   return notes
-    .filter((n) => !n.draft)
+    .filter((n) => !n.draft && (isDev || !localOnlyCategories.has(n.categorySlug)))
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 }
 

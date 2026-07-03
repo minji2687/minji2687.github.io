@@ -9,9 +9,10 @@ import type { NoteMeta } from '@/types/note'
 
 type NotesListProps = {
   notes: NoteMeta[]
+  isDev?: boolean
 }
 
-export function NotesList({ notes }: NotesListProps) {
+export function NotesList({ notes, isDev = false }: NotesListProps) {
   const searchParams = useSearchParams()
   const category = searchParams.get('category') ?? 'all'
 
@@ -20,7 +21,11 @@ export function NotesList({ notes }: NotesListProps) {
       ? notes.filter((n) => n.categorySlug === category)
       : notes
 
-  const allCategories = [{ slug: 'all', name: '전체' }, ...noteCategories]
+  const visibleCategories = isDev
+    ? noteCategories
+    : noteCategories.filter((c) => !('localOnly' in c && c.localOnly))
+
+  const allCategories = [{ slug: 'all', name: '전체' }, ...visibleCategories]
 
   return (
     <>

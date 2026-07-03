@@ -24,7 +24,7 @@ export default async function NotesPage() {
       </div>
 
       <Suspense fallback={<div className="py-8 text-center text-sm text-[var(--muted)]">로딩 중...</div>}>
-        <NotesList notes={notes} />
+        <NotesList notes={notes} isDev={process.env.NODE_ENV === 'development'} />
       </Suspense>
     </Container>
   )

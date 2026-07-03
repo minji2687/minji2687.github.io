@@ -8,6 +8,7 @@ export type NoteFrontmatter = {
 
 export type Note = NoteFrontmatter & {
   slug: string
+  categorySlug: string
   href: string
   content: string
 }

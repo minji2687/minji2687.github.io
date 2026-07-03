@@ -1,6 +1,7 @@
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { Container } from '@/components/layout/Container'
-import { NoteCard } from '@/components/note/NoteCard'
+import { NotesList } from '@/components/note/NotesList'
 import { getAllNoteMeta } from '@/lib/notes'
 
 export const metadata: Metadata = {
@@ -22,23 +23,9 @@ export default async function NotesPage() {
         </p>
       </div>
 
-      {notes.length === 0 ? (
-        <div className="py-20 text-center">
-          <p className="text-base text-[var(--muted)]">
-            아직 노트가 없습니다.{' '}
-            <code className="text-sm">src/content/notes/*.md</code>에 파일을
-            추가하세요.
-          </p>
-        </div>
-      ) : (
-        <ul className="grid gap-4 sm:grid-cols-2">
-          {notes.map((note) => (
-            <li key={note.href}>
-              <NoteCard note={note} />
-            </li>
-          ))}
-        </ul>
-      )}
+      <Suspense fallback={<div className="py-8 text-center text-sm text-[var(--muted)]">로딩 중...</div>}>
+        <NotesList notes={notes} />
+      </Suspense>
     </Container>
   )
 }

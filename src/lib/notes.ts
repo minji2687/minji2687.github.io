@@ -20,20 +20,25 @@ function parseFrontmatter(source: string): {
 }
 
 export async function getAllNotes(): Promise<Note[]> {
-  const files = await glob('*.md', {
+  const files = await glob('**/*.md', {
     cwd: NOTES_DIR,
     absolute: false,
   })
 
   const notes = files.map((file) => {
-    const slug = file.replace(/\.md$/, '')
+    const parts = file.split('/')
+    const categorySlug = parts[0]
+    const filename = parts[parts.length - 1]
+    const slug = filename.replace(/\.md$/, '')
+
     const source = fs.readFileSync(path.join(NOTES_DIR, file), 'utf-8')
     const { frontmatter, content } = parseFrontmatter(source)
 
     return {
       ...frontmatter,
       slug,
-      href: `/notes/${slug}`,
+      categorySlug,
+      href: `/notes/${categorySlug}/${slug}`,
       content,
     } satisfies Note
   })
@@ -43,8 +48,8 @@ export async function getAllNotes(): Promise<Note[]> {
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 }
 
-export async function getNote(slug: string): Promise<Note | null> {
-  const filePath = path.join(NOTES_DIR, `${slug}.md`)
+export async function getNote(categorySlug: string, slug: string): Promise<Note | null> {
+  const filePath = path.join(NOTES_DIR, categorySlug, `${slug}.md`)
   if (!fs.existsSync(filePath)) return null
 
   const source = fs.readFileSync(filePath, 'utf-8')
@@ -53,14 +58,15 @@ export async function getNote(slug: string): Promise<Note | null> {
   return {
     ...frontmatter,
     slug,
-    href: `/notes/${slug}`,
+    categorySlug,
+    href: `/notes/${categorySlug}/${slug}`,
     content,
   }
 }
 
 export async function getAllNoteParams() {
   const notes = await getAllNotes()
-  return notes.map((n) => ({ slug: n.slug }))
+  return notes.map((n) => ({ category: n.categorySlug, slug: n.slug }))
 }
 
 export async function getAllNoteMeta(): Promise<NoteMeta[]> {

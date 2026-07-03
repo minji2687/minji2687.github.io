@@ -8,6 +8,7 @@ type MarkdocImageProps = {
 export function MarkdocImage({ src, alt }: MarkdocImageProps) {
   const fullSrc = src.startsWith('/') ? `${basePath}${src}` : src
   return (
+    // eslint-disable-next-line @next/next/no-img-element
     <img
       src={fullSrc}
       alt={alt ?? ''}

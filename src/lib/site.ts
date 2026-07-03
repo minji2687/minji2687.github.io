@@ -28,5 +28,13 @@ export const siteConfig = {
   ],
 }
 
+export const noteCategories = [
+  { slug: 'frontend', name: 'Frontend' },
+  { slug: 'backend', name: 'Backend' },
+  { slug: 'ai', name: 'AI' },
+  { slug: 'tips', name: 'Tips' },
+]
+
 export type NavItem = (typeof siteConfig.nav)[number]
 export type Category = (typeof siteConfig.categories)[number]
+export type NoteCategory = (typeof noteCategories)[number]

@@ -6,7 +6,7 @@ import { parseMarkdoc, renderMarkdoc } from '@/lib/markdoc'
 import { siteConfig } from '@/lib/site'
 
 type NotePageProps = {
-  params: Promise<{ slug: string }>
+  params: Promise<{ category: string; slug: string }>
 }
 
 export async function generateStaticParams() {
@@ -16,8 +16,8 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: NotePageProps): Promise<Metadata> {
-  const { slug } = await params
-  const note = await getNote(slug)
+  const { category, slug } = await params
+  const note = await getNote(category, slug)
   if (!note) return {}
 
   return {
@@ -31,8 +31,8 @@ export async function generateMetadata({
 }
 
 export default async function NotePage({ params }: NotePageProps) {
-  const { slug } = await params
-  const note = await getNote(slug)
+  const { category, slug } = await params
+  const note = await getNote(category, slug)
 
   if (!note) {
     notFound()

@@ -4,7 +4,6 @@ import { useSearchParams } from 'next/navigation'
 import { ArticleCard } from '@/components/article/ArticleCard'
 import { CategoryNav } from '@/components/article/CategoryNav'
 import type { ArticleMeta } from '@/types/article'
-import { siteConfig } from '@/lib/site'
 
 type ArticlesListProps = {
   articles: ArticleMeta[]

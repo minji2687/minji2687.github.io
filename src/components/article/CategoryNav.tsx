@@ -1,12 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { clsx } from 'clsx'
 import { siteConfig } from '@/lib/site'
 
 export function CategoryNav() {
-  const pathname = usePathname()
   const searchParams = useSearchParams()
   const currentCategory = searchParams.get('category') ?? 'all'
 

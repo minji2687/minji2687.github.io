@@ -1,4 +1,3 @@
-import { Suspense } from 'react'
 import Link from 'next/link'
 import { Prose } from './Prose'
 import { ArticleToc } from './ArticleToc'

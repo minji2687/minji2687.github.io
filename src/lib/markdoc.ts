@@ -2,6 +2,8 @@ import Markdoc, { type Config, type RenderableTreeNode } from '@markdoc/markdoc'
 import React from 'react'
 import { Callout } from '@/components/markdoc/Callout'
 import { CodeBlock } from '@/components/markdoc/CodeBlock'
+import { Figure } from '@/components/markdoc/Figure'
+import { ImageRow } from '@/components/markdoc/ImageRow'
 import { MarkdocImage } from '@/components/markdoc/MarkdocImage'
 import { Note } from '@/components/markdoc/Note'
 import { Steps, Step } from '@/components/markdoc/Steps'
@@ -23,6 +25,15 @@ const config: Config = {
       render: 'Note',
       attributes: {
         title: { type: String },
+      },
+    },
+    'image-row': {
+      render: 'ImageRow',
+    },
+    figure: {
+      render: 'Figure',
+      attributes: {
+        caption: { type: String },
       },
     },
     steps: {
@@ -48,6 +59,7 @@ const config: Config = {
       attributes: {
         src: { type: String },
         alt: { type: String },
+        title: { type: String },
       },
     },
   },
@@ -56,6 +68,8 @@ const config: Config = {
 const components = {
   Callout,
   CodeBlock,
+  Figure,
+  ImageRow,
   MarkdocImage,
   Note,
   Steps,

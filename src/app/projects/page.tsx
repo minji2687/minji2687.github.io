@@ -31,16 +31,17 @@ export default async function ProjectsPage() {
 
       <ul className="space-y-5">
         {projects.map((project) => (
-          <li key={project.slug}>
-          <Link
-            href={project.href}
-            className="block rounded-xl border border-[var(--border-color)] bg-[var(--card-bg)] p-5 shadow-sm transition-all hover:border-[var(--accent)]/40 hover:shadow-md"
+          <li
+            key={project.slug}
+            className="relative rounded-xl border border-[var(--border-color)] bg-[var(--card-bg)] p-5 shadow-sm transition-all hover:border-[var(--accent)]/40 hover:shadow-md"
           >
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <h2 className="text-card-title font-semibold text-[var(--foreground)]">
-                    {project.title}
+                    <Link href={project.href} className="after:absolute after:inset-0">
+                      {project.title}
+                    </Link>
                   </h2>
                   {project.org && (
                     <span
@@ -68,7 +69,7 @@ export default async function ProjectsPage() {
                   ))}
                 </div>
                 {project.links && project.links.length > 0 && (
-                  <div className="mt-3 flex gap-3">
+                  <div className="relative z-10 mt-3 flex gap-3">
                     {project.links.map((link) => (
                       <a
                         key={link.href}
@@ -87,7 +88,6 @@ export default async function ProjectsPage() {
                 {project.date}
               </time>
             </div>
-          </Link>
           </li>
         ))}
       </ul>

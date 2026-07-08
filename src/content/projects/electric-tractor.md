@@ -131,6 +131,41 @@ const sendBuffer = () => {
 
 차량 단말기는 상태 데이터를 CAN 프레임으로 보낸다. 4개의 CAN ID(`0x341`~`0x344`)에 속도·배터리 전압/SOC·오일 온도·히치 위치·인버터 온도·고장 코드 등이 나뉘어 담겨 있고, 각 필드는 바이트 단위가 아니라 비트 단위로 패킹돼 있다.
 
+받는 쪽(트랙터 → 앱)과 보내는 쪽(앱 → 트랙터)의 실제 데이터 모양이 서로 다르다.
+
+**받는 쪽**은 WebSocket으로 이런 JSON 텍스트가 온다.
+
+```json
+{
+  "action": "canDataToApp",
+  "data": {
+    "bufferString": { "type": "Buffer", "data": [1, 0, 3, 49, 29, 49, 2, 0, 1, ...] }
+  }
+}
+```
+
+`bufferString.data`는 Node `Buffer`를 그대로 `JSON.stringify`한 결과라, 숫자 배열로 온다. 이걸 다시 `Buffer.from()`으로 복원하면 그 안에 CAN 프로필 ID(문자열, 36바이트) → 프레임 개수 → 20바이트짜리 프레임(CAN ID 4바이트 + CAN 데이터 8바이트 + 타임스탬프 8바이트)이 반복되는 구조가 들어있다. 이 8바이트 CAN 데이터 안에서 다시 `parseData`로 속도·전압·스위치 등을 비트 단위로 뽑아낸다.
+
+**보내는 쪽**은 26바이트짜리 고정 버퍼 하나를 계속 재사용한다. 앞뒤로 고정 헤더/마커를 박아두고,
+
+```ts
+buffer.writeInt16BE(0x0200, 0);       // [0~1]  고정 헤더
+buffer.writeInt32BE(0x11030000, 2);   // [2~5]  고정 마커
+buffer.writeInt32BE(0x12030000, 14);  // [14~17] 고정 마커
+```
+
+나머지 자리에 실제 제어값(스위치 packing, 로더 압력, 램프 스위치 등)을 채운 뒤 이렇게 감싸서 보낸다.
+
+```ts
+const bufferRequestData = {
+  action: 'canDataToEquipment',
+  data: { bufferString: JSON.stringify(cachedBufferData) }, // 26개짜리 숫자 배열을 문자열로
+};
+wsService.sendMessage(JSON.stringify(bufferRequestData));
+```
+
+받는 쪽은 `Buffer`가 JSON으로 직렬화된 `{type, data}` 모양으로 오고, 보내는 쪽은 26개 숫자 배열을 문자열로 한 번 더 감싸서 보낸다는 점에서 인코딩 방식이 대칭이 아니다.
+
 ```ts
 const CF_HitchPosAct = canFrame.parseData({
   canData: canDataBuffer,

@@ -145,6 +145,8 @@ const CF_HitchPosAct = canFrame.parseData({
 
 `startByte`/`startBit`/`bitLength`로 비트 위치를 지정하고 `scale`/`offset`으로 실제 물리값으로 변환하는 파서를 CAN ID별로 만들어, 수신한 프레임을 곧바로 상태 스토어(Zustand)에 반영한다.
 
+→ [바이너리 프로토콜 파싱 — GPS 좌표부터 CAN 버스 비트 신호까지](/articles/frontend/binary-protocol-parsing)
+
 ---
 
 ## 4. 제어 UI 구조
@@ -165,4 +167,5 @@ const CF_HitchPosAct = canFrame.parseData({
 
 - [ ] alive-signal 5초 타이머 값을 어떻게 정했는지(현장 네트워크 환경 기준) 보강
 - [ ] 관련 이미지(제어 UI 스크린샷) 추가
-- [ ] 보내는 흐름/받는 흐름(인터벌+이벤트 중복 방지, CAN 바이너리 파싱)을 별도 아티클로 정리 — 면접 준비용으로도 활용
+- [x] CAN 바이너리 파싱을 별도 아티클로 정리 — [바이너리 프로토콜 파싱](/articles/frontend/binary-protocol-parsing)
+- [ ] 보내는 흐름/받는 흐름(인터벌+이벤트 중복 방지)을 별도 아티클로 정리 — 면접 준비용으로도 활용

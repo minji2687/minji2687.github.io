@@ -34,6 +34,7 @@ export const noteCategories = [
   { slug: 'ai', name: 'AI' },
   { slug: 'tips', name: 'Tips' },
   { slug: 'math', name: 'Math', localOnly: true },
+  { slug: 'course-notes', name: 'Course Notes', localOnly: true },
 ]
 
 export type NavItem = (typeof siteConfig.nav)[number]

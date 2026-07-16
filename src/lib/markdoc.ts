@@ -5,6 +5,7 @@ import { CodeBlock } from '@/components/markdoc/CodeBlock'
 import { Figure } from '@/components/markdoc/Figure'
 import { ImageRow } from '@/components/markdoc/ImageRow'
 import { MarkdocImage } from '@/components/markdoc/MarkdocImage'
+import { MarkdocLink } from '@/components/markdoc/MarkdocLink'
 import { Note } from '@/components/markdoc/Note'
 import { Steps, Step } from '@/components/markdoc/Steps'
 
@@ -62,6 +63,13 @@ const config: Config = {
         title: { type: String },
       },
     },
+    link: {
+      render: 'MarkdocLink',
+      attributes: {
+        href: { type: String, required: true },
+        title: { type: String },
+      },
+    },
   },
 }
 
@@ -71,6 +79,7 @@ const components = {
   Figure,
   ImageRow,
   MarkdocImage,
+  MarkdocLink,
   Note,
   Steps,
   Step,

@@ -50,7 +50,7 @@ export async function getAllNotes(): Promise<Note[]> {
   })
 
   return notes
-    .filter((n) => !n.draft && (isDev || !localOnlyCategories.has(n.categorySlug)))
+    .filter((n) => isDev || (!n.draft && !localOnlyCategories.has(n.categorySlug)))
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 }
 

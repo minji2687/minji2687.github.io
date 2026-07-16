@@ -186,13 +186,13 @@ export const deviceDisconnectedTopic = (productKey: string) =>
 
 ## Custom Authorizer로 인증하기
 
-브라우저는 AWS 시크릿을 코드에 담을 수 없다. 소스가 공개되는 환경이라서다. 이 문제를 우회하기 위해 **Custom Authorizer** 방식을 썼다. 브라우저가 자격증명 없이 연결 요청을 보내면, AWS IoT Core가 미리 등록된 Lambda를 호출해서 허용 여부를 판단하는 구조다.
+브라우저는 AWS 시크릿을 코드에 담을 수 없다. 소스가 공개되는 환경이라서다. 이 프로젝트는 이 문제를 **Custom Authorizer** 방식으로 우회하고 있었는데, 내가 새로 도입한 게 아니라 팀에서 원래부터 써오던 방식이다. 브라우저가 자격증명 없이 연결 요청을 보내면, AWS IoT Core가 미리 등록된 Lambda를 호출해서 허용 여부를 판단하는 구조다.
 
 ```ts
 .with_custom_authorizer("", AUTHORIZER_NAME, "", "", "", "")
 ```
 
-인증 로직은 백엔드팀이 구성했고, 프론트에서는 Authorizer 이름만 넘기면 됐다. Custom Authorizer 상세 동작은 별도로 정리할 예정이다.
+인증 로직(Lambda, Authorizer 등록 등)은 백엔드팀이 구성했고, 프론트에서는 Authorizer 이름만 넘기면 연결이 됐다.
 
 ---
 

@@ -34,8 +34,8 @@ LangChain 같은 추상화 라이브러리 없이 RAG 흐름을 직접 연결했
 
 라이브러리가 내부에서 처리해주는 것들을 직접 연결하면서 RAG의 각 단계가 왜 필요한지 구체적으로 이해할 수 있었다.
 
-→ [RAG와 할루시네이션](/notes/rag-study-and-hallucination)  
-→ [Redis로 벡터 DB 구현하기](/notes/redis-vector-db-rag)
+→ [RAG와 할루시네이션](/notes/ai/rag-study-and-hallucination)  
+→ [Redis로 벡터 DB 구현하기](/notes/ai/redis-vector-db-rag)
 
 ---
 
@@ -69,7 +69,7 @@ await redis.sendCommand([
 
 대화가 이어지려면 이전 메시지를 기억해야 한다. Redis에 세션 ID 키로 대화 이력을 저장하고, TTL을 24시간으로 설정했다. 컨텍스트가 무한정 쌓이면 토큰 비용이 늘어나기 때문에 최근 10개 메시지만 유지하는 슬라이딩 윈도우로 처리했다.
 
-→ [Redis로 LLM 세션 컨텍스트 관리하기](/notes/redis-session-context)
+→ [Redis로 LLM 세션 컨텍스트 관리하기](/notes/backend/redis-session-context)
 
 ---
 

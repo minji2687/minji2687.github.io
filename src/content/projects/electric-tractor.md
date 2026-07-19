@@ -188,7 +188,30 @@ const CF_HitchPosAct = canFrame.parseData({
 
 주행/로더/PTO/히치/수평/경심/외부압/램프&혼 — 기능별로 탭을 나눠 모듈화했다. 기능이 늘어나도 탭 하나를 추가하는 식으로 확장할 수 있는 구조다.
 
-제어 상태는 Zustand 스토어 하나로 모았다. 사용자가 버튼이나 슬라이더를 조작하면 스토어 상태가 바뀌고, 그 변경이 WebSocket을 통해 차량으로 전송되는 흐름을 표준화했다. 화면마다 따로 상태를 들고 전송 로직을 짜지 않고, "조작 → 상태 업데이트 → 전송"이라는 한 가지 패턴만 따르도록 했다.
+제어 상태는 Zustand 스토어 하나로 모았다. 사용자가 버튼이나 슬라이더를 조작하면 스토어 상태가 바뀌고, 그 변경이 WebSocket을 통해 차량으로 전송되는 흐름을 표준화했다. 화면마다 따로 상태를 들고 전송 로직을 짜지 않고, "조작 → 상태 업데이트 → 전송"이라는 한 가지 패턴만 따르도록 했다. Redux 대비 보일러플레이트(action/reducer/Provider) 없이 `create()` 한 줄로 스토어를 만들 수 있어 가벼웠다.
+
+**로컬 저장** — 마지막으로 연결한 장비 정보나 제어 설정값처럼 앱을 껐다 켜도 유지해야 하는 값이 있었다. 이런 값은 스토어를 만들 때 `persist` 미들웨어로 한 번 감싸주기만 하면 됐다.
+
+```ts
+export const useConnectionStore = create<State & Action>()(
+  persist(
+    (_set, _get) => ({
+      isConnected: false,
+      mqttConnected: false,
+      productKey: '',
+      activeMenu: 'connect',
+    }),
+    {
+      name: 'connectionState',
+      storage: createJSONStorage(() => AsyncStorage),
+    },
+  ),
+);
+```
+
+`persist(creator, options)`가 스토어 생성 함수(`creator`)를 감싸는 구조다. `options.storage`로 실제 저장소(`AsyncStorage`)를 지정하고, `createJSONStorage`가 상태 객체를 JSON 문자열로 직렬화/역직렬화해 그 저장소에 읽고 쓸 수 있게 어댑터 역할을 한다. `name`은 `AsyncStorage`에 저장될 때 쓰이는 키 이름이다.
+
+이렇게 한 번 연결해두면, 그 이후로는 컴포넌트에서 `set()`으로 상태를 바꿀 때마다 미들웨어가 알아서 최신 상태를 `AsyncStorage`에 써준다. 화면 코드에서 저장 시점을 따로 챙기거나 `AsyncStorage.setItem`을 직접 호출할 필요가 없고, 앱을 다시 켰을 때도 미들웨어가 저장된 값을 읽어와 스토어 초기 상태로 복원해준다.
 
 **보내는 흐름** — 기본적으로 연결돼 있는 동안 500ms마다 현재 스토어 상태를 자동으로 반복 전송한다. 그런데 사용자가 버튼/슬라이더를 조작한 순간에도 이 자동 전송 타이머가 우연히 같이 발동하면, 같은 데이터가 두 번 보내질 수 있다. 그래서 조작이 일어나면(`sendDataOnEvent()`) ① 자동 전송 타이머를 멈추고 ② 그 자리에서 즉시 한 번만 보낸 뒤 ③ 타이머를 다시 0부터 시작한다. 즉 "조작 시 전송"과 "주기적 전송"이 겹치지 않도록, 조작이 있을 때마다 주기적 전송의 카운트를 리셋하는 방식이다. 실제 전송 자체는 `updateAndSendData`가 스토어 값을 비트 단위로 buffer에 채운 뒤 `sendBuffer`가 그 buffer를 WebSocket으로 보낸다(`action: 'canDataToEquipment'`).
 

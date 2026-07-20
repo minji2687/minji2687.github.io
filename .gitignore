@@ -19,6 +19,7 @@ node_modules/
 
 # Private local-only notes (never commit/push — e.g. course study notes)
 src/content/notes/course-notes/
+public/images/_drafts/
 
 # Debug
 npm-debug.log*

@@ -24,6 +24,10 @@ links:
 
 이를 해결하기 위해 운영 KPI 대시보드를 기획·설계·구현했다. 대시보드 기획과 UX/UI 디자인, SQL 기반 KPI 집계 설계, D3·Canvas 기반 프론트엔드 구현을 담당했다.
 
+{% callout type="info" title="개발 환경" %}
+이 프로젝트의 구현 상당 부분(SQL 쿼리 최적화 포함)은 Claude Code 등 AI 도구의 제안을 바탕으로 진행했고, 그 원리를 이해하고 검증하며 적용했다.
+{% /callout %}
+
 ---
 
 ## 1. 지도 마커를 SVG에서 Canvas로 전환

@@ -86,7 +86,9 @@ const components = {
 }
 
 export function parseMarkdoc(source: string): RenderableTreeNode {
-  const ast = Markdoc.parse(source)
+  const ast = Markdoc.parse(source, { allowComments: true } as Parameters<
+    typeof Markdoc.parse
+  >[1])
   const errors = Markdoc.validate(ast, config)
 
   if (errors.length > 0 && process.env.NODE_ENV === 'development') {

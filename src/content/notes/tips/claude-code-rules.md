@@ -3,7 +3,7 @@ title: "Claude Code 규칙 파일(.claude/rules) 관리하는 법"
 description: "CLAUDE.md 하나에 규칙을 다 몰아넣는 대신 .claude/rules/ 아래 파일을 나눠 관리하는 법. paths frontmatter 유무에 따라 상시 로드되는지, 조건부로 로드되는지가 갈린다."
 date: "2026-07-29"
 tags: ["Claude Code", "AI Tools"]
-draft: true
+draft: false
 ---
 
 CLAUDE.md 하나에 프로젝트 규칙을 다 적으면 파일이 금방 비대해진다. Claude Code는 `.claude/rules/` 아래에 규칙을 주제별로 쪼개서 관리하는 기능을 공식으로 지원하는데, 이때 파일마다 **언제 로드되는지**가 다르다는 걸 몰랐다가 실제 예시로 확인해봤다.

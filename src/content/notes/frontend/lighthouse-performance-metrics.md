@@ -3,16 +3,18 @@ title: "Lighthouse 성능 지표 정리 — FCP, SI, LCP, TBT, CLS"
 description: "Lighthouse Performance 점수를 구성하는 5개 지표가 각각 뭘 재는지, 점수 가중치는 어떻게 매겨지는지, Core Web Vitals와는 어떻게 다른지, 그리고 각 지표를 실제로 개선하는 방법을 정리한다."
 date: "2026-07-11"
 tags: ["Lighthouse", "Performance", "Core Web Vitals", "Web Performance"]
-draft: true
+draft: false
 ---
-
-> 초안. 실제로 이 블로그에 Lighthouse 돌려보면서 스크린샷·수치·개선 전후 비교 추가할 것.
 
 ![Lighthouse 리포트 — Performance 70, Accessibility 91, Best Practices 100, SEO 100](/images/lighthouse/lighthouse-report-scores.png)
 
 ![Render-blocking requests — layout.css가 10.1 KiB, 80ms 동안 초기 렌더를 막고 있음, 예상 절감 40ms](/images/lighthouse/lighthouse-render-blocking-requests.png)
 
 > 위 render-blocking 경고는 로컬(`localhost`) dev 서버 기준 측정치다. 실제 GitHub Pages 배포판에서는 같은 문제가 나타나지 않았는데, dev 서버는 압축·캐싱 없이 파일을 그대로 서빙하는 반면 GitHub Pages는 Fastly CDN을 통해 압축·캐싱된 상태로 서빙하기 때문이다. 자세한 내용은 [CDN 기초 노트](/notes/frontend/cdn-basics) 참고.
+
+아래 지표들은 중요도 순이 아니라, 페이지가 로딩되는 동안 실제로 일어나는 사건 순서를 따라 정리했다:
+
+**화면에 뭔가 뜬다(FCP) → 계속 채워진다(SI) → 가장 큰 게 뜬다(LCP) → 반응 가능해진다(TTI) → 그 구간이 얼마나 막혀있었나(TBT) → 그 전체 과정에서 레이아웃이 얼마나 흔들렸나(CLS)**
 
 ## Lighthouse Performance 점수는 어떻게 매겨지나
 
@@ -68,7 +70,31 @@ Lighthouse의 Performance 점수(0~100)는 지표 하나가 아니라, **5개 �
 
 **개선 방법**:
 - LCP 이미지에 `fetchpriority="high"` 부여, `<link rel="preload">`로 우선 로딩
+  - 브라우저는 HTML을 위에서부터 읽으며 리소스를 발견한 순서대로 받아오는데, LCP 이미지가 문서 중간에 있거나 CSS 배경 이미지로 걸려있으면 발견 자체가 늦어짐 — 이 둘은 "발견을 기다리지 말고 최대한 빨리 다운로드 시작해라"고 브라우저에 직접 지시하는 것
+    ```html
+    <!-- head에서 다운로드를 미리 시작 -->
+    <link rel="preload" as="image" href="hero.jpg">
+
+    <!-- img 태그 자체에 우선순위 표시 -->
+    <img src="hero.jpg" fetchpriority="high" alt="...">
+    ```
 - 이미지 포맷 최적화(WebP/AVIF), 반응형 이미지(`srcset`)
+  - WebP/AVIF는 같은 화질에서 JPEG/PNG보다 용량이 훨씬 작은 포맷 — 받을 바이트 수 자체를 줄임. `srcset`은 화면 크기별로 다른 해상도 파일을 준비해 브라우저가 필요한 크기만 받게 함 — 모바일에서 데스크톱용 대형 이미지를 통째로 받는 낭비 방지
+    ```html
+    <!-- 브라우저가 지원하는 포맷을 위에서부터 순서대로 시도, 다 안되면 마지막 img로 폴백 -->
+    <picture>
+      <source srcset="hero.avif" type="image/avif">
+      <source srcset="hero.webp" type="image/webp">
+      <img src="hero.jpg" alt="...">
+    </picture>
+
+    <!-- 화면 크기별로 다른 해상도 파일 중 브라우저가 알아서 선택 -->
+    <img
+      src="hero-800.jpg"
+      srcset="hero-400.jpg 400w, hero-800.jpg 800w, hero-1600.jpg 1600w"
+      sizes="(max-width: 600px) 400px, 800px"
+      alt="...">
+    ```
 - 서버에서 미리 렌더링(SSR/SSG)해서 클라이언트 데이터 페칭 대기 없애기
 
 ---
@@ -136,9 +162,3 @@ Lighthouse의 Performance 점수(0~100)는 지표 하나가 아니라, **5개 �
 - **Chrome DevTools → Lighthouse 탭**: 로컬에서 바로 실행, 랩 데이터
 - **PageSpeed Insights**: 랩 데이터 + 실제 트래픽이 있는 사이트라면 필드 데이터(CrUX)도 같이 보여줌
 - **Google Search Console → Core Web Vitals 리포트**: 구글이 무료로 제공하는, 내 사이트의 검색 노출·색인 상태를 관리하는 도구. 도메인 소유권을 인증해두면(DNS TXT 레코드나 HTML 파일 업로드 등으로), 실제로 그 사이트를 방문한 크롬 사용자들의 진짜 필드 데이터(CrUX)를 모아 URL 그룹별로 "좋음/개선 필요/나쁨"으로 분류해서 보여준다 — 개인 블로그도 무료로 등록해서 실사용자 기준 성능을 확인할 수 있다.
-
-## TODO
-- [ ] 이 블로그(minji-dev-blog) 실제로 Lighthouse 돌려서 현재 점수 스크린샷 + 병목 지점 확인
-- [ ] 위 가중치 표를 최신 Lighthouse 공식 문서 숫자로 검증
-- [ ] 실제 개선 작업 하나 골라서(이미지 최적화든 코드 스플리팅이든) 전후 점수 비교 추가
-- [ ] 이 블로그를 Search Console에 실제로 등록하고 필드 데이터 확인

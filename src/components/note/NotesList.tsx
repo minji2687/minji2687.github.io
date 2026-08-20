@@ -4,8 +4,11 @@ import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { clsx } from 'clsx'
 import { NoteCard } from '@/components/note/NoteCard'
+import { Pagination } from '@/components/ui/Pagination'
 import { noteCategories } from '@/lib/site'
 import type { NoteMeta } from '@/types/note'
+
+const PAGE_SIZE = 8
 
 type NotesListProps = {
   notes: NoteMeta[]
@@ -20,6 +23,25 @@ export function NotesList({ notes, isDev = false }: NotesListProps) {
     category !== 'all'
       ? notes.filter((n) => n.categorySlug === category)
       : notes
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const rawPage = Number(searchParams.get('page') ?? '1')
+  const currentPage = Math.min(
+    Math.max(1, Number.isNaN(rawPage) ? 1 : rawPage),
+    totalPages,
+  )
+  const paged = filtered.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  )
+
+  const buildHref = (page: number) => {
+    const params = new URLSearchParams()
+    if (category !== 'all') params.set('category', category)
+    if (page > 1) params.set('page', String(page))
+    const query = params.toString()
+    return query ? `/notes?${query}` : '/notes'
+  }
 
   const visibleCategories = isDev
     ? noteCategories
@@ -55,13 +77,21 @@ export function NotesList({ notes, isDev = false }: NotesListProps) {
           <p className="text-sm text-[var(--muted)]">해당 카테고리에 아직 노트가 없습니다.</p>
         </div>
       ) : (
-        <ul className="grid gap-4 sm:grid-cols-2">
-          {filtered.map((note) => (
-            <li key={note.href}>
-              <NoteCard note={note} />
-            </li>
-          ))}
-        </ul>
+        <>
+          <ul className="grid gap-4 sm:grid-cols-2">
+            {paged.map((note) => (
+              <li key={note.href}>
+                <NoteCard note={note} />
+              </li>
+            ))}
+          </ul>
+
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            buildHref={buildHref}
+          />
+        </>
       )}
     </>
   )

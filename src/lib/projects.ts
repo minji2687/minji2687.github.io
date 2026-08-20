@@ -4,6 +4,8 @@ import glob from 'fast-glob'
 import yaml from 'js-yaml'
 import type { Project, ProjectFrontmatter, ProjectMeta } from '@/types/project'
 
+const isDev = process.env.NODE_ENV === 'development'
+
 const PROJECTS_DIR = path.join(process.cwd(), 'src/content/projects')
 
 function parseFrontmatter(source: string): {
@@ -39,7 +41,7 @@ export async function getAllProjects(): Promise<Project[]> {
   })
 
   return projects
-    .filter((p) => !p.draft)
+    .filter((p) => isDev || !p.draft)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 }
 

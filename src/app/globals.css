@@ -7,6 +7,8 @@
 @theme {
   --color-indigo: #4361ee;
   --color-indigo-light: #6b8cff;
+  --color-pink: #eb7485;
+  --color-cyan: #94bfce;
 
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Lora", ui-serif, Georgia, serif;

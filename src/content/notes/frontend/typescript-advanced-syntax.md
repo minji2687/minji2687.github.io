@@ -1,11 +1,9 @@
 ---
 title: "TypeScript 고급 문법 정리"
-description: "Generics부터 Conditional/Mapped Types까지, 어디까지 익숙하게 쓰고 어디부터 더 채워야 하는지 기준점 삼아 정리한다."
+description: "평소에 손에 익어서 쓰는 문법은 아니지만, 알아두면 코드 읽고 쓰는 데 도움되는 TypeScript 타입 문법들을 정리한다. Generics부터 Conditional Types, Discriminated Union까지."
 date: "2026-06-23"
 tags: ["TypeScript"]
 ---
-
-## 익숙하게 쓰는 것
 
 ### Generics
 
@@ -145,8 +143,6 @@ interface IWithName extends IBase {
 
 ---
 
-## 가끔 쓰는 것
-
 ### Mapped Types
 
 기존 타입의 모든 키를 순회하면서 새 타입을 만드는 문법. Utility Type들(`Partial`, `Readonly` 등)도 내부적으로 이 방식으로 구현돼 있다.
@@ -166,10 +162,6 @@ type UserFlags = FlagsOf<User>; // { id: boolean; name: boolean; email: boolean 
 직접 만든 Utility Type이 필요할 때(예: 모든 필드를 폼의 "터치 여부"로 매핑) 가끔 쓴다.
 
 ---
-
-## 다음에 채울 것
-
-아직 실전에서 깊게 써본 적은 없지만, 다음에 직접 써보면서 채워나갈 것들.
 
 ### Conditional Types
 
@@ -230,76 +222,14 @@ function handle(result: Result) {
 }
 ```
 
-### Template Literal Types
+### 그 밖에 이름 정도는 알아두면 좋은 것들
 
-```ts
-type EventName = 'click' | 'hover';
-type HandlerName = `on${Capitalize<EventName>}`; // 'onClick' | 'onHover'
-```
-
-### infer
-
-조건부 타입의 `extends` 절 안에서 타입의 일부를 "캡쳐"해서 새 타입 변수로 쓰는 키워드. 사실 위 `ElementType<T>`의 `infer U`가 이미 그 예시였다 — "배열이면 그 안의 원소 타입을 U라는 이름으로 뽑아내겠다"는 뜻이었다.
-
-같은 패턴으로 함수의 반환 타입도 뽑아낼 수 있다.
-
-```ts
-type ReturnTypeOf<T> = T extends (...args: any[]) => infer R ? R : never;
-
-function getUser() {
-  return { id: '1', name: '민지' };
-}
-
-type User = ReturnTypeOf<typeof getUser>; // { id: string; name: string }
-```
-
-풀어서 읽으면: "T가 어떤 함수 모양(`(...args: any[]) => 무언가`)에 들어맞으면, 그 '무언가'(반환 타입)를 R이라는 이름으로 뽑아낸다. 안 맞으면 never." `(...args: any[]) => infer R`에서 `infer R`이 있는 자리가 바로 "캡쳐할 위치"다 — 함수의 반환 타입 자리에 있는 게 뭐든 R로 부르겠다는 뜻. 실제로 이 유틸리티는 TS 내장 `ReturnType<T>`와 동일하다.
-
-```ts
-type Same = ReturnType<typeof getUser>; // ReturnTypeOf<typeof getUser>와 같은 결과
-```
-
-`infer`는 함수 반환 타입뿐 아니라 어떤 타입 구조 안에서도 쓸 수 있다. 예를 들어 `Promise`가 감싸고 있는 실제 값의 타입을 뽑아내고 싶다면:
-
-```ts
-type Unwrap<T> = T extends Promise<infer V> ? V : T;
-
-type A = Unwrap<Promise<string>>; // string
-type B = Unwrap<number>;          // number (Promise가 아니니 그대로)
-```
-
-패턴은 항상 같다: "T가 어떤 구조에 들어맞으면, 그 구조 안의 한 자리를 변수로 캡쳐해서 꺼내 쓴다." 배열이면 원소 타입을(`ElementType`), 함수면 반환 타입을(`ReturnTypeOf`), Promise면 내부 값 타입을(`Unwrap`) — 캡쳐하는 위치만 바뀔 뿐이다.
-
-### 함수 오버로드 시그니처
-
-```ts
-function format(value: string): string;
-function format(value: number): string;
-function format(value: string | number): string {
-  return String(value);
-}
-```
-
-### satisfies
-
-```ts
-const config = {
-  width: 100,
-  height: 200,
-} satisfies Record<string, number>;
-// config.width는 number로 추론되면서, Record<string, number> 제약도 검사됨
-```
-
-### declare module / 네임스페이스 확장
-
-서드파티 라이브러리에 타입이 없거나, 기존 타입에 필드를 더 얹어야 할 때.
-
-```ts
-declare module 'some-untyped-lib' {
-  export function doSomething(x: number): void;
-}
-```
+- **infer**: 조건부 타입 안에서 타입의 일부를 "캡쳐"해서 변수처럼 쓰는 키워드. 위 `ElementType<T>`의 `infer U`가 그 예시 — TS 내장 `ReturnType<T>`, `Awaited<T>` 같은 유틸리티가 내부적으로 이 방식을 쓴다.
+- **Template Literal Types**: 문자열 리터럴을 조합해서 새 문자열 타입을 만든다. `` `on${Capitalize<'click' | 'hover'>}` `` → `'onClick' | 'onHover'`.
+- **함수 오버로드 시그니처**: 같은 함수 이름에 입력 타입별로 다른 시그니처를 여러 개 선언할 수 있다.
+- **satisfies**: 타입 추론 결과는 그대로 유지하면서, 특정 타입 제약에 맞는지만 검사하고 싶을 때.
+- **declare module**: 서드파티 라이브러리에 타입이 없을 때 타입을 직접 얹어준다.
 
 ---
 
-> 다음에 할 일: 위 "다음에 채울 것" 항목들을 실제 프로젝트 코드에서 써보고, 여기에 구체적 사례를 추가하기.
+> 실제 프로젝트 코드에서 마주치는 경우가 생기면 여기에 구체적 사례를 추가할 것.

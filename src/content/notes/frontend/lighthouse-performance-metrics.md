@@ -151,6 +151,18 @@ Lighthouse의 Performance 점수(0~100)는 지표 하나가 아니라, **5개 �
 - **랩 데이터**: 재현 가능, 디버깅하기 좋음, 근데 실제 사용자 환경과 다를 수 있음
 - **필드 데이터**: 실제 사용자가 겪은 값이라 정확하지만, 트래픽이 있어야만 모을 수 있고 왜 느렸는지 원인 추적이 어려움
 
+**각각 뭘 재는지**
+
+| | Lighthouse 5개 지표 (랩) | Core Web Vitals 3개 (필드) |
+|---|---|---|
+| 목록 | FCP, SI, **LCP**, TBT, **CLS** | **LCP**, INP, **CLS** |
+
+이름이 겹치는 지표(LCP, CLS)가 있어서 헷갈리기 쉬운데, 같은 지표를 서로 다른 방식으로 잰 두 개의 숫자라고 보면 된다 — Lighthouse가 보여주는 LCP·CLS는 정해진 환경에서 한 번 시뮬레이션한 추정치고, Core Web Vitals의 LCP·CLS(Search Console 등에서 보이는 값)는 실제 방문자 다수의 실측값이다.
+
+**INP**는 Core Web Vitals에만 있다. 실제 사용자가 클릭·탭해야 측정되는 지표라 아무도 상호작용하지 않는 랩 환경에서는 잴 수 없기 때문이다 — Lighthouse는 대신 TBT로 비슷한 걸 추정한다.
+
+**FCP, SI, TBT**는 Core Web Vitals에 없다. 구글이 "사용자 경험에 결정적"이라고 공식 채택한 건 LCP·INP·CLS 3개뿐이고, 나머지는 Lighthouse가 디버깅용으로 추가로 보여주는 보조 지표다.
+
 **INP (Interaction to Next Paint)** 는 페이지에서 일어나는 모든 사용자 상호작용(클릭, 탭, 키 입력)에 대해 "입력한 순간부터 그 결과가 화면에 그려지기까지" 걸린 시간을 재고, 세션 중 가장 느렸던 값을 최종 점수로 잡는 지표다. 2024년 3월 기존 Core Web Vital이었던 **FID(First Input Delay)** 를 대체하며 세 번째 Core Web Vital이 됐다. FID는 세션의 **첫 번째** 상호작용의 입력 지연만 쟀지만, INP는 세션 내내 일어나는 **모든** 상호작용을 보고 입력 지연·이벤트 처리·화면 반영까지 전 과정을 재서, "처음엔 빠른데 나중에 계속 버벅이는" 상황도 잡아낸다. 기준은 200ms 이하 = Good, 500ms 초과 = Poor.
 
 그래서 Core Web Vital 3개(LCP, INP, CLS) 중 LCP·CLS는 Lighthouse도 랩 환경에서 근사치를 잴 수 있지만, INP는 실제 사용자가 상호작용해야만 측정되는 지표라 랩에서 잴 수가 없다 — Lighthouse는 그 대체재로 TBT를 쓴다. 즉 **"Lighthouse 점수가 100이어도 실제 Core Web Vitals(특히 INP)는 나쁠 수 있다"** — 랩과 필드가 항상 일치하진 않는다.

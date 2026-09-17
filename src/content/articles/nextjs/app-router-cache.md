@@ -13,20 +13,20 @@ featured: false
 
 Next.js 캐싱이 어려운 건 "캐시가 하나"가 아니기 때문이다. App Router에는 서로 다른 위치에서 동작하는 캐시 레이어가 4개 있고, 같은 fetch 요청이라도 어느 레이어에서 hit하느냐에 따라 API 호출이 일어나기도 안 일어나기도 한다.
 
-거기다 v13, v14, v15, v16을 거치면서 기본값이 달라졌다. v13~14에서 캐시됐던 동작이 v15에서 바뀌고, v16에서 아예 다른 모델로 전환된다.
+거기다 Next.js v13, v14, v15, v16을 거치면서 기본값이 달라졌다. v13~14에서 캐시됐던 동작이 v15에서 바뀌고, v16에서 아예 다른 모델로 전환된다.
 
 ---
 
 ## 캐시 4개: 각각 무엇을 저장하는가
 
-| 레이어 | 위치 | 지속 범위 | 저장하는 것 |
-|---|---|---|---|
-| Request Memoization | 서버 (요청 단위) | 단일 렌더 패스 | 같은 렌더링 중 중복 fetch 결과 |
-| Data Cache | 서버 (지속) | 빌드~재검증 전까지 | fetch/DB 결과 |
-| Full Route Cache | 서버 (지속) | 빌드~재검증 전까지 | 렌더링된 HTML/RSC Payload |
-| Router Cache | 클라이언트 | 세션 동안 | 방문한 라우트의 RSC Payload |
+| # | 레이어 | 위치 | 지속 범위 | 저장하는 것 |
+|---|---|---|---|---|
+| 1 | Request Memoization | 서버 (요청 단위) | 단일 렌더 패스 | 같은 렌더링 중 중복 fetch 결과 |
+| 2 | Data Cache | 서버 (지속) | 빌드~재검증 전까지 | fetch/DB 결과 |
+| 3 | Full Route Cache | 서버 (지속) | 빌드~재검증 전까지 | 렌더링된 HTML/RSC Payload |
+| 4 | Router Cache | 클라이언트 | 세션 동안 | 방문한 라우트의 RSC Payload |
 
-### Request Memoization — 한 렌더 패스 안에서 중복 제거
+### 1. Request Memoization — 한 렌더 패스 안에서 중복 제거
 
 같은 렌더링 안에서 여러 컴포넌트가 같은 데이터를 요청하면 첫 번째 결과를 재사용한다.
 
@@ -42,7 +42,7 @@ async function Body({ id }: { id: string }) {
 }
 ```
 
-렌더 패스가 끝나면 사라진다. `fetch`에는 내장되어 있고, ORM이나 직접 DB 호출에는 `react`의 `cache()`를 직접 써야 한다.
+렌더 패스가 끝나면 사라진다. Next.js가 확장한 `fetch`에는 이 메모이제이션이 내장되어 있고, ORM이나 직접 DB 호출에는 `react`의 `cache()`를 직접 써야 한다.
 
 ```typescript
 import { cache } from 'react'
@@ -52,7 +52,7 @@ export const getPost = cache(async (id: string) => {
 })
 ```
 
-### Data Cache — fetch/DB 결과 저장
+### 2. Data Cache — fetch/DB 결과 저장
 
 실제 API 호출이나 DB 쿼리 결과를 서버에 저장한다. 재검증하거나 무효화하기 전까지 유지된다.
 
@@ -74,15 +74,19 @@ export const getCachedPosts = unstable_cache(
 )
 ```
 
-### Full Route Cache — 렌더링된 페이지 결과 저장
+### 3. Full Route Cache — 렌더링된 페이지 결과 저장
 
 페이지 전체를 렌더링한 결과(HTML + RSC Payload)를 서버에 저장한다. Full Route Cache가 hit되면 렌더링 자체를 건너뛰고, Data Cache도 조회하지 않는다.
 
-`dynamic = 'force-dynamic'`이나 `revalidate: 0`을 쓰면 이 레이어는 비활성화된다.
+`dynamic = 'force-dynamic'`이나 `revalidate: 0`을 쓰면 이 레이어는 비활성화된다. 즉 렌더링된 HTML을 저장해뒀다가 재사용하는 일 없이, 요청이 올 때마다 매번 새로 렌더링한다.
 
-### Router Cache — 브라우저 캐시
+### 4. Router Cache — 브라우저 캐시
 
 서버가 아니라 브라우저 메모리에 저장된다. 방문한 라우트의 RSC Payload를 저장해두어, 뒤로 가기나 이미 방문한 페이지 이동을 빠르게 한다. 브라우저를 닫거나 세션이 끝나면 사라진다.
+
+{% callout type="info" title="RSC Payload란" %}
+React Server Components가 렌더링된 결과를 담은, HTML이 아닌 서버→클라이언트 전용 직렬화 포맷이다. 완성된 HTML 문자열 대신 "트리를 이렇게 구성해라"는 압축된 데이터 스트림이며, Server Component의 렌더링 결과와 Client Component 자리에 대한 참조, Server → Client로 내려주는 props를 담고 있다. 브라우저는 이를 받아 서버 로직을 다시 실행하지 않고도 React 트리를 재구성한다. `<Link>`로 라우트를 prefetch하면 이 payload가 미리 받아져 Router Cache에 저장되고, 실제 이동 시 서버 왕복 없이 바로 화면을 그릴 수 있다.
+{% /callout %}
 
 ---
 

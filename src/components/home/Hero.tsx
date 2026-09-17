@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/Button'
 
 export function Hero() {
   return (
-    <section className="py-20 sm:py-28">
+    <section className="py-13 sm:py-17">
       <div className="max-w-2xl">
         <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[var(--border-color)] bg-[var(--card-bg)] px-3 py-1">
           <span className="h-2 w-2 rounded-full bg-emerald-400" />
@@ -19,10 +19,11 @@ export function Hero() {
         </p>
 
         <p className="mt-6 text-base leading-8 text-[var(--muted)]">
-          Frontend developer with 5 years of experience building real-time,
-          data-heavy interfaces. I turn MQTT/WebSocket/IoT device data into
-          reliable, map-based UIs — from web dashboards to React Native
-          control apps.
+        React, Next.js, TypeScript를 중심으로
+        웹 서비스를 개발하는 프론트엔드 개발자입니다.<br />
+
+        B2B Admin, 데이터 시각화, 실시간 서비스부터<br />
+React Native 모바일 앱까지 다양한 제품을 개발해왔습니다.
         </p>
 
         <div className="mt-8 flex flex-wrap gap-3">

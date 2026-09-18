@@ -18,7 +18,7 @@ Pluva Care 웹/앱에서 기존 AWS Cognito + Amplify 기반 인증을 걷어내
 
 발단은 백엔드에서 나온 의견이었다. Cognito로 회원을 관리하다 보니 자체적인 회원 데이터를 갖기 어렵다는 의견이 나왔다. Cognito가 해주는 게 많긴 했지만, AWS에 회원 정보 자체가 종속된다는 점이 문제였다. 자체 회원 서비스를 만들고 직접 관리하자는 방향으로 결론이 났다.
 
-프론트엔드에서도 같은 불만이 있었다. Cognito를 붙이려면 Amplify를 써야 하는데, **Amplify는 버전이 올라갈 때마다 API가 크게 바뀌었다.** v5에서 v6으로 넘어갈 때 `Auth.signIn()` 하나가 완전히 다른 형태가 됐고, 그때마다 인증 관련 코드를 전부 다시 맞춰야 했다. 백엔드와 프론트엔드 모두 같은 결론이었다.
+프론트엔드에서도 같은 불만이 있었다. Cognito를 붙이려면 Amplify를 써야 하는데, **Amplify는 버전이 올라갈 때마다 API가 크게 바뀌었다.** v5에서 v6으로 넘어갈 때 `Auth.signIn()` 등의 여러 API가 완전히 다른 형태가 됐고, 그때마다 인증 관련 코드를 전부 다시 맞춰야 했다. 그래서 백엔드의 어려움에 공감했고, 프론트엔드에서도 Amplify 버전 문제로 불편을 겪고 있었기에 Cognito를 걷어내는 데 동의했다. 다만 지금 돌아보면, 빠르게 구현해야 하는 상황에서 Cognito가 대신 해결해주던 여러 보안 문제와 세부 인증 기능까지 함께 포기한 건 아쉬운 지점이 있다. 그래서 이후 다른 프로젝트에서는 다시 Cognito로 돌아갔지만, 이 경험은 인증을 처음부터 직접 구현해보는 계기가 되었다.
 
 ---
 
@@ -73,7 +73,9 @@ const axiosInstance = axios.create({
 export default axiosInstance;
 ```
 
-`withCredentials: true`는 크로스 오리진 요청에서도 쿠키와 인증 헤더를 포함시키는 옵션이다. 프론트엔드(예: `localhost:3000`)와 API 서버(예: `api.example.com`) 도메인이 다를 때, 기본 설정으론 쿠키가 전송되지 않는다. 이 옵션을 켜야 서버가 Set-Cookie로 심은 쿠키가 이후 요청에도 붙어 나간다. 단, 서버 측에서도 CORS 설정에서 `Access-Control-Allow-Credentials: true`와 정확한 오리진을 허용해야 쌍이 맞는다.
+{% callout type="info" title="withCredentials: true는 왜 필요한가" %}
+크로스 오리진 요청에서도 쿠키와 인증 헤더를 포함시키는 옵션이다. 프론트엔드(예: `localhost:3000`)와 API 서버(예: `api.example.com`) 도메인이 다를 때, 기본 설정으론 쿠키가 전송되지 않는다. 이 옵션을 켜야 서버가 Set-Cookie로 심은 쿠키가 이후 요청에도 붙어 나간다. 단, 서버 측에서도 CORS 설정에서 `Access-Control-Allow-Credentials: true`와 정확한 오리진을 허용해야 쌍이 맞는다.
+{% /callout %}
 
 Authorization 헤더는 여기서 설정하지 않는다. `axios.create()`는 앱이 처음 로드될 때 실행되는데, 그 시점엔 아직 로그인 전이라 토큰 자체가 없기 때문이다. 대신 로그인 성공 후 `setHeader()`로 헤더를 동적으로 주입한다. `axiosInstance.defaults.headers`를 직접 수정하는 방식이라 이후 모든 요청에 자동으로 반영된다.
 
@@ -206,7 +208,55 @@ accessToken 만료 시간이 1시간이라 `refetchInterval`을 57분으로 맞�
 
 이 구조 덕분에 토큰 만료를 사용자가 인식하지 못한 채 자연스럽게 넘어간다. 로그인 화면으로 튕기는 일이 줄어든다.
 
-> 해당 코드는 Bitbucket으로 저장소 이전 이후 작성돼 현재 로컬에 남아있지 않다.
+대충 짜면 걸리는 함정이 두 개 있다. 재시도한 요청이 또 401나면 무한루프에 빠지고, 화면에서 API가 여러 개 동시에 나가다 한꺼번에 401나면 인터셉터가 각 요청마다 독립적으로 반응해서 갱신 API가 중복 호출된다. `isRefreshing` 같은 플래그로 "이미 갱신 중이면 새로 쏘지 않는다"는 장치를 뒀던 것으로 기억한다.
+
+```ts
+let isRefreshing = false;
+
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const { config, response } = error;
+    if (response?.status !== 401 || config._retry || isRefreshing) {
+      return Promise.reject(error);
+    }
+
+    config._retry = true;
+    isRefreshing = true;
+    try {
+      const { accessToken, refreshToken } = await getAccessToken();
+      setHeader('Authorization', accessToken);
+      config.headers.Authorization = accessToken;
+      return axiosInstance(config); // 원래 요청 재시도
+    } catch (refreshError) {
+      removeHeader('Authorization');
+      return Promise.reject(refreshError); // 로그아웃 트리거
+    } finally {
+      isRefreshing = false;
+    }
+  }
+);
+```
+
+> 해당 코드는 Bitbucket으로 저장소 이전 이후 작성돼 현재 로컬에 남아있지 않다. 위 코드는 기억을 바탕으로 재구성한 것이라 세부 구현(동시 요청을 큐에 쌓아뒀다가 한 번에 재시도시키는 부분 등)은 실제와 다를 수 있다.
+
+위 코드는 `isRefreshing`이 `true`인 동안 들어온 요청을 그냥 실패시킨다. 대기 중인 요청을 큐에 쌓아뒀다가 갱신이 끝나면 새 토큰으로 한 번에 재시도시키면 더 방어적인 코드가 된다.
+
+```ts
+let subscribers: Array<(token: string) => void> = [];
+
+// isRefreshing이 true일 때
+return new Promise((resolve) => {
+  subscribers.push((newToken) => {
+    config.headers.Authorization = newToken;
+    resolve(axiosInstance(config));
+  });
+});
+
+// 갱신 성공 시
+subscribers.forEach((cb) => cb(accessToken));
+subscribers = [];
+```
 
 ---
 
@@ -290,10 +340,34 @@ function useAuth() {
 
 Cognito가 편리하긴 하지만, 백엔드 인증 방식이 바뀌면 프론트엔드 전체가 흔들린다. 인증 레이어를 직접 설계하면 복잡도는 올라가지만, 백엔드 변화에 대응하기 훨씬 쉬워진다.
 
+그래서 백엔드의 어려움에 공감했고, 프론트엔드에서도 Amplify 버전 문제로 불편을 겪고 있었기에 Cognito를 걷어내는 데 동의했다. 다만 지금 돌아보면, 빠르게 구현해야 하는 상황에서 Cognito가 대신 해결해주던 여러 보안 문제와 세부 인증 기능까지 함께 포기한 건 아쉬운 지점이 있다. 그래서 이후 다른 프로젝트에서는 다시 Cognito로 돌아갔지만, 이 경험은 인증을 처음부터 직접 구현해보는 계기가 되었다.
+
+---
+
+## 구현하진 않았지만 알아두면 좋은 것 — 탭 간 토큰 동기화
+
+인터셉터의 `isRefreshing` 플래그는 같은 탭 안에서만 유효하다. 탭을 여러 개 열어두면 각 탭이 독립된 JS 컨텍스트라, 탭마다 따로 401을 맞고 따로 refresh를 시도한다. refreshToken이 1회용(로테이션)이면 한쪽만 성공하고 다른 탭은 실패해 로그아웃되는 등 탭 간 상태가 어긋날 수 있다.
+
+`BroadcastChannel`은 같은 origin의 탭들이 메시지를 주고받을 수 있는 브라우저 API다. 한 탭만 refresh를 하고 나머지 탭은 결과를 방송으로 받아 반영하면 이 문제를 막을 수 있다.
+
+```ts
+const authChannel = new BroadcastChannel('auth');
+
+// refresh 성공한 탭이 다른 탭에 새 토큰 방송
+authChannel.postMessage({ type: 'TOKEN_REFRESHED', accessToken });
+
+// 다른 탭은 방송만 받아서 헤더 갱신, 직접 refresh 안 함
+authChannel.onmessage = (event) => {
+  if (event.data.type === 'TOKEN_REFRESHED') {
+    setHeader('Authorization', event.data.accessToken);
+  }
+};
+```
+
 ---
 
 ## 참고
 
-이 글에서 다루지 않은 부분도 있다. 동시에 여러 탭에서 401이 터질 때 토큰 갱신 요청이 중복으로 나가는 문제, 탭 간 토큰 동기화(`BroadcastChannel`), httpOnly 쿠키 기반 저장 전략 등은 실제 서비스에서 마주치는 엣지 케이스다.
+이 글에서 다루지 않은 부분도 있다. httpOnly 쿠키 기반 저장 전략 등은 실제 서비스에서 마주치는 엣지 케이스다.
 
 이 주제를 더 깊이 다루는 글로 [현대적인 인증 프로세스 설계 — 롤링 세션과 엣지 케이스 대응](https://ramirami.tistory.com/227)이 잘 정리돼 있다. Access Token은 짧게, Refresh Token은 롤링 방식으로 갱신하는 구조와 Next.js 미들웨어를 활용한 일관된 세션 처리까지 커버한다.

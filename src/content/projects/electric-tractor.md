@@ -24,7 +24,7 @@ React Native 기반 iOS/Android 크로스플랫폼 앱으로, 프론트엔드 �
 
 ## 1. MQTT + WebSocket, 이중 통신 구조
 
-제어 명령 송신과 CAN 데이터 수신은 AWS API Gateway 기반 WebSocket으로 처리한다. CAN 데이터는 ID·필드 종류가 많은데, MQTT로 보내려면 토픽(라우트)을 필드 단위로 일일이 쪼개서 만들어야 해서 번거롭다고 판단했다. 그래서 CAN payload를 필드 단위 토픽으로 쪼개기보다, 프레임 단위로 통째로 받아 앱에서 직접 파싱하는 방식을 택했다.
+제어 명령 송신과 CAN 데이터 수신은 WebSocket으로 처리한다. CAN 데이터는 ID·필드 종류가 많은데, MQTT로 보내려면 토픽(라우트)을 필드 단위로 일일이 쪼개서 만들어야 해서 번거롭다고 판단했다. 그래서 CAN payload를 필드 단위 토픽으로 쪼개기보다, 프레임 단위로 통째로 받아 앱에서 직접 파싱하는 방식을 택했다.
 
 문제는 이 앱이 차량과 실제로 연결되어 있는지, 즉 "살아있는지"를 확인하는 부분이었다. WebSocket 쪽에는 이 상태를 판단할 코드를 따로 두지 않았다. 그래서 별도로 AWS IoT Core에 `react-native-paho-mqtt`로 MQTT 연결을 새로 맺고, `alive-signal` 토픽 하나만 구독해서 연결 상태를 확인하는 채널을 추가했다. 결과적으로 통신 채널이 두 개로 나뉘게 됐다 — 제어/데이터는 기존 WebSocket, 연결 상태 확인은 새로 추가한 MQTT.
 
@@ -68,7 +68,7 @@ const startAliveTimeout = useCallback(() => {
 }, [stopAliveTimeout]);
 ```
 
-`AwsIotMqttService`에는 `onConnected`/`onDisconnected`라는 콜백이 이미 있지만, 이 이벤트만 믿고 끊김을 판단하기엔 불안했다. 라이브러리가 끊김을 감지하지 못하거나 늦게 알려주는 경우, `onDisconnected`가 안 불려도 실제로는 끊겨 있을 수 있기 때문이다. 그래서 더 확실한 방법으로 바꿨다 — 살아있는 동안 트랙터가 계속 보내는 `alive-signal`이 들어오는 동안에는 연결된 것으로 보고, 5초 안에 그 신호가 끊기면 그때 연결이 끊긴 것으로 판단한다. 연결 여부를 라이브러리의 이벤트가 아니라 실제 데이터가 계속 오는지로 직접 검증하는 쪽을 택한 것이다.
+`AwsIotMqttService`에는 `onConnected`/`onDisconnected`라는 콜백이 이미 있지만, 이 이벤트만 믿고 끊김을 판단하기엔 불안했다. 인프라 담당자가 이 기능이 있지만 실뢰 할 수 없다는 답변을 했기 때문이였다. 그래서 더 확실한 방법으로 바꿨다 — 살아있는 동안 트랙터가 계속 보내는 `alive-signal`이 들어오는 동안에는 연결된 것으로 보고, 5초 안에 그 신호가 끊기면 그때 연결이 끊긴 것으로 판단한다. 연결 여부를 라이브러리의 이벤트가 아니라 실제 데이터가 계속 오는지로 직접 검증하는 쪽을 택한 것이다.
 
 이 방식으로 바꾼 뒤에는 연결 상태를 소켓 이벤트 하나에만 의존하지 않게 됐다. 원격 제어 앱에서 중요한 건 "연결 객체가 열려 있는가"가 아니라 "장비가 실제로 응답하고 있는가"였기 때문에, alive-signal 기반 판단이 더 맞는 방식이었다.
 
@@ -179,6 +179,40 @@ const CF_HitchPosAct = canFrame.parseData({
 ```
 
 `startByte`/`startBit`/`bitLength`로 비트 위치를 지정하고 `scale`/`offset`으로 실제 물리값으로 변환하는 파서를 CAN ID별로 만들어, 수신한 프레임을 곧바로 상태 스토어(Zustand)에 반영한다.
+
+돌아보면 이 구조도 더 간단하게 짤 수 있었다. 바이트 경계에 정렬된 필드는 `parseData`를 거칠 필요 없이 `DataView` 내장 메서드로 바로 읽으면 된다.
+
+```ts
+const view = new DataView(canDataBuffer.buffer, canDataBuffer.byteOffset, canDataBuffer.byteLength);
+
+// 지금: parseData({startByte:0, bitLength:8, scale:0.25, ...})
+const CF_VcuVehSpd = view.getUint8(0) * 0.25;
+
+// 지금: parseData({startByte:0, bitLength:16, scale:0.01, ...})
+const BMS_PackVolt = view.getUint16(0, true) * 0.01; // true = little-endian
+
+// offset도 그냥 산수
+const TMS_BattTemp = view.getUint8(4) - 40;
+```
+
+진짜 비트 단위로 쪼개야 하는 필드(`CF_PosnLvrSw` 3비트 같은)만 작은 헬퍼 하나로 남기면 된다.
+
+```ts
+function readBits(view: DataView, startByte: number, startBit: number, bitLength: number, signed = false) {
+  const raw = view.getUint8(startByte) >>> startBit;
+  const mask = (1 << bitLength) - 1;
+  let value = raw & mask;
+  if (signed && (value & (1 << (bitLength - 1)))) {
+    value -= 1 << bitLength; // 2의 보수, 문자열 치환 필요 없음
+  }
+  return value;
+}
+
+// 지금: parseData({startByte:2, startBit:5, bitLength:3, ...})
+const CF_PosnLvrSw = readBits(view, 2, 5, 3);
+```
+
+`MqttBuffer → UploadCanPayload/List → UploadCanFrame`로 이어지는 래퍼 3~4단과, 마스크를 `Array(bitLength).fill(1).join('')`로 문자열로 조립하고 부호 확장까지 문자열 치환으로 처리하던 부분이, `DataView` 한 줄 + 헬퍼 함수 하나로 압축되는 셈이다. 실제로 고치진 않았고, 다음에 이 파일을 다시 건드릴 일이 생기면 정리할 메모로만 남겨뒀다.
 
 → [바이너리 프로토콜 파싱 — GPS 좌표부터 CAN 버스 비트 신호까지](/articles/frontend/binary-protocol-parsing)
 

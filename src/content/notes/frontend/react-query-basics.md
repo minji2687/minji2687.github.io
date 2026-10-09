@@ -6,17 +6,6 @@ description: "왜 커스텀 훅만으로는 부족하고 React Query가 필요�
 draft: false
 ---
 
-## 검수 메모 — v5 기준 정리
-
-- `useQuery({ queryKey, queryFn, ...options })` — 인자 3개 방식(v3) 아님, 객체 하나
-- 패키지명 `@tanstack/react-query` (구 `react-query`)
-- `cacheTime` → `gcTime`
-- `isLoading` → `isPending` (isLoading은 `isPending && isFetching` 파생 플래그로 잔류)
-- status 문자열 `'loading'` → `'pending'`
-- `onSuccess`/`onError`/`onSettled` 쿼리 옵션 콜백 제거 → `useEffect`로 처리
-- `suspense: true` 옵션 제거 → `useSuspenseQuery` 등 전용 훅으로 분리
-
-
 ## TanStack Query란
 
 React Query는 정확히는 TanStack Query의 React 어댑터다. 공식 소개 문구가 "Powerful asynchronous state management"인데, 여기서 핵심은 "state management"가 아니라 "**asynchronous** state management"라는 점이다.
@@ -148,3 +137,63 @@ React Query는 핵심적으로 **query key를 기준으로 캐싱을 관리**한
 바로 위에서 확인한 "컴포넌트가 두 개인데 요청은 한 번만 나간다" 현상이 정확히 이 규칙 때문이다. 두 `ProductPanel`이 똑같이 `queryKey: ['products']`를 썼으니 React Query 입장에서는 "같은 데이터를 가리키는 캐시"로 취급한 것. 반대로 만약 `inStockOnly` 값이 컴포넌트마다 다르다면, key도 `['products', { inStockOnly }]`처럼 그 조건을 포함시켜야 서로 다른 캐시로 구분된다 — key가 다르면 아예 다른 데이터로 취급되어 캐시가 공유되지 않고 각자 새로 fetch된다.
 
 내부적으로는 이 배열을 그대로 참조 비교(`===`)하는 게 아니라, 안정적인 방식으로 직렬화/해시해서 같은 값이면 같은 캐시 엔트리로 매칭시키는 방식일 것이다. 그래야 매 렌더마다 새로 만들어지는 `['products', { inStockOnly }]` 같은 배열 리터럴(참조는 매번 다름)도 "내용이 같으면 같은 키"로 인식될 수 있다. 객체 안에서 key 순서가 달라도(`{ inStockOnly, page }` vs `{ page, inStockOnly }`) 같은 키로 취급되는 것도 이 직렬화 과정에서 key를 정렬한 뒤 해시하기 때문으로 이해하면 된다.
+
+---
+
+## 검수 메모 — v3/v4 → v5 변경점
+
+> 공식문서·예제 코드가 버전마다 API가 달라서, 실제로 v5 기준으로 확인한 것만 별도로 정리.
+
+이름만 바뀐 것:
+
+| 항목 | 이전 | v5 |
+|---|---|---|
+| 패키지명 | `react-query` | `@tanstack/react-query` |
+| 캐시 정리 옵션 | `cacheTime` | `gcTime` |
+| 로딩 플래그 | `isLoading` | `isPending` (`isLoading`은 `isPending && isFetching` 파생 플래그로 잔류) |
+| status 문자열 | `'loading'` | `'pending'` |
+
+코드 형태 자체가 바뀐 것:
+
+**1) `useQuery` 호출 방식 — 위치 인자 3개 → 옵션 객체 하나**
+
+```ts
+// v3
+useQuery(queryKey, queryFn, options);
+
+// v5
+useQuery({ queryKey, queryFn, ...options });
+```
+
+**2) `onSuccess`/`onError`/`onSettled` 콜백 옵션 제거 → `useEffect`로 이동**
+
+```ts
+// v4까지
+useQuery({
+  queryKey,
+  queryFn,
+  onSuccess: (data) => { /* ... */ },
+  onError: (err) => { /* ... */ },
+});
+
+// v5 — 콜백 옵션이 없으니 반환값을 직접 구독
+const { data, error } = useQuery({ queryKey, queryFn });
+
+useEffect(() => {
+  if (data) { /* ... */ }
+}, [data]);
+
+useEffect(() => {
+  if (error) { /* ... */ }
+}, [error]);
+```
+
+**3) `suspense: true` 옵션 제거 → 전용 훅(`useSuspenseQuery`)으로 분리**
+
+```ts
+// v4까지 — 옵션 하나로 suspense 모드 on/off
+useQuery({ queryKey, queryFn, suspense: true });
+
+// v5 — 아예 다른 훅. data가 undefined일 수 없다는 게 타입으로도 보장됨
+const { data } = useSuspenseQuery({ queryKey, queryFn });
+```

@@ -65,7 +65,7 @@ export function MobileNav({ open, onClose }: MobileNavProps) {
                     onClick={onClose}
                     aria-current={isActive ? 'page' : undefined}
                     className={clsx(
-                      'block rounded-lg px-3 py-2.5 text-base font-medium transition-colors hover:bg-[var(--accent-sub)]/10',
+                      'block rounded-lg px-3 py-2.5 text-base font-medium transition-colors hover:bg-lavender/70 dark:hover:bg-lavender/10',
                       isActive
                         ? 'text-[var(--accent)]'
                         : 'text-[var(--muted)] hover:text-[var(--foreground)]',

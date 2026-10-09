@@ -40,3 +40,7 @@ export const noteCategories = [
 export type NavItem = (typeof siteConfig.nav)[number]
 export type Category = (typeof siteConfig.categories)[number]
 export type NoteCategory = (typeof noteCategories)[number]
+
+export function isNavActive(pathname: string, href: string) {
+  return pathname === href || (href !== '/' && pathname.startsWith(href))
+}

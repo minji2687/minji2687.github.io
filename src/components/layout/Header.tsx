@@ -1,14 +1,22 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { clsx } from 'clsx'
 import { Container } from './Container'
+import { MobileNav } from './MobileNav'
 import { ThemeToggle } from './ThemeToggle'
-import { siteConfig } from '@/lib/site'
+import { isNavActive, siteConfig } from '@/lib/site'
 
 export function Header() {
   const pathname = usePathname()
+  const [mobileNavOpen, setMobileNavOpen] = useState(false)
+
+  // 뒤로가기 등 링크 클릭 외의 경로 변경에도 메뉴 닫기
+  useEffect(() => {
+    setMobileNavOpen(false)
+  }, [pathname])
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--border-color)] bg-[var(--background)]/95 backdrop-blur-sm">
@@ -31,9 +39,7 @@ export function Header() {
             {/* 데스크탑 nav */}
             <ul className="hidden items-center gap-0.5 sm:flex">
               {siteConfig.nav.map((item) => {
-                const isActive =
-                  pathname === item.href ||
-                  (item.href !== '/' && pathname.startsWith(item.href))
+                const isActive = isNavActive(pathname, item.href)
                 return (
                   <li key={item.href}>
                     <Link
@@ -59,7 +65,10 @@ export function Header() {
             {/* 모바일 메뉴 버튼 */}
             <button
               className="rounded-md p-2 text-[var(--muted)] transition-colors hover:text-[var(--foreground)] sm:hidden"
+              onClick={() => setMobileNavOpen(true)}
               aria-label="메뉴 열기"
+              aria-expanded={mobileNavOpen}
+              aria-controls="mobile-nav"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -80,6 +89,11 @@ export function Header() {
           </nav>
         </div>
       </Container>
+
+      <MobileNav
+        open={mobileNavOpen}
+        onClose={() => setMobileNavOpen(false)}
+      />
     </header>
   )
 }

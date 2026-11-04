@@ -2,6 +2,7 @@ import Markdoc, { type Config, type RenderableTreeNode } from '@markdoc/markdoc'
 import React from 'react'
 import { Callout } from '@/components/markdoc/Callout'
 import { CodeBlock } from '@/components/markdoc/CodeBlock'
+import { Box, Flow, Grid } from '@/components/markdoc/Diagram'
 import { Figure } from '@/components/markdoc/Figure'
 import { ImageRow } from '@/components/markdoc/ImageRow'
 import { MarkdocImage } from '@/components/markdoc/MarkdocImage'
@@ -46,6 +47,40 @@ const config: Config = {
         title: { type: String },
       },
     },
+    flow: {
+      render: 'Flow',
+      attributes: {
+        title: { type: String },
+        caption: { type: String },
+        direction: { type: String, default: 'col', matches: ['col', 'row'] },
+      },
+    },
+    grid: {
+      render: 'Grid',
+      attributes: {
+        title: { type: String },
+        desc: { type: String },
+        caption: { type: String },
+        cols: { type: Number, default: 2 },
+      },
+    },
+    box: {
+      render: 'Box',
+      selfClosing: true,
+      attributes: {
+        title: { type: String, required: true },
+        desc: { type: String },
+        label: { type: String },
+        badge: { type: String },
+        tone: {
+          type: String,
+          default: 'default',
+          matches: ['default', 'blue', 'green', 'amber', 'muted'],
+        },
+        arrow: { type: String },
+        both: { type: Boolean },
+      },
+    },
   },
   nodes: {
     fence: {
@@ -74,8 +109,11 @@ const config: Config = {
 }
 
 const components = {
+  Box,
   Callout,
   CodeBlock,
+  Flow,
+  Grid,
   Figure,
   ImageRow,
   MarkdocImage,

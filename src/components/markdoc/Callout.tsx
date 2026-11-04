@@ -70,13 +70,22 @@ export function Callout({ type = 'info', title, children }: CalloutProps) {
         </svg>
       </div>
 
-      <div className="flex-1 text-sm leading-7">
+      <div className="min-w-0 flex-1 pr-8 text-sm leading-7">
         {title && (
           <p className="mb-1 font-semibold text-slate-900 dark:text-slate-100">
             {title}
           </p>
         )}
-        <div className="text-slate-600 dark:text-slate-400">{children}</div>
+        <div
+          className={clsx(
+            'text-slate-600 dark:text-slate-400',
+            '[&_ol]:list-decimal [&_ul]:list-disc [&_ol]:pl-5 [&_ul]:pl-5',
+            '[&_li]:mt-2 [&_li]:pl-1 [&_li+li]:mt-3',
+            '[&_p+p]:mt-2 [&_pre]:my-2',
+          )}
+        >
+          {children}
+        </div>
       </div>
     </div>
   )

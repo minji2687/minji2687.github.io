@@ -36,7 +36,7 @@ export function CodeBlock({ language = 'text', content, children }: CodeBlockPro
 
       <Highlight
         theme={themes.oneDark}
-        code={code.trim()}
+        code={code.replace(/^(\s*\n)+/, '').trimEnd()}
         language={language as Parameters<typeof Highlight>[0]['language']}
       >
         {({ className, style, tokens, getLineProps, getTokenProps }) => (

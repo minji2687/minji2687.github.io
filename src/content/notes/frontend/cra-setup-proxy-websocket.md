@@ -3,7 +3,6 @@ title: "CRA setupProxy.js — 개발 서버 프록시가 이런 구조인 이유
 description: "CRA 개발 서버에서만 쓰는 setupProxy.js의 역할, package.json proxy에서 바뀌어 온 이유, 다른 도구와의 비교, 그리고 ws: true 프록시가 모든 웹소켓 연결을 가로채 개발 서버가 꺼지던 문제까지 정리한다."
 date: "2026-11-26"
 tags: ["CRA", "Proxy", "WebSocket", "http-proxy-middleware", "Dev Server"]
-draft: true
 ---
 
 > 초안. 개발 서버가 자꾸 꺼지고 "서버와의 연결이 해제되었습니다"가 뜨던 문제를 고치면서 `setupProxy.js`를 처음부터 다시 읽고 정리한 노트.
